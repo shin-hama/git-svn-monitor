@@ -10,7 +10,7 @@ class GitClient():
         if Path(path).joinpath(".git").exists():
             self.repo = git.Repo(path)
         else:
-            self.repo = git.Repo.init(path, mkdir=True)
+            self.repo = git.Repo.init(path, mkdir=True, bare=True)
 
     def add_remote(self, name: str, url: str):
         try:
