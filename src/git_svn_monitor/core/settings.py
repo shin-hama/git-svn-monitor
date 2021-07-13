@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 from typing import Any, Optional, Union
 
-from git_svn_monitor.core.config import PathLike, TARGET_DIR
+from git_svn_monitor.core.config import PathLike
 
 
 class Setting:
