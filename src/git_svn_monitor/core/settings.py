@@ -2,14 +2,21 @@ from datetime import datetime
 import json
 from typing import Any, Optional, Union
 
+from git.repo.base import Repo
+
 from git_svn_monitor.core.config import PathLike
 
 
 class Setting:
     def __init__(self, **kwargs: Any) -> None:
-        self.repositories: list[Repository] = kwargs.get("repositories", [])
-        self.email: str = kwargs.get("email", "")
-        self.last_updated: Optional[datetime] = kwargs.get("lastUpdated", None)
+        self.repositories: list[Repository] = kwargs.get("repositories", [Repository()])
+        self.email: str = kwargs.get("email", "example@email.com")
+
+        if "lastUpdated" in kwargs:
+            self.last_updated: Optional[datetime] = datetime.fromisoformat(kwargs["lastUpdated"])
+        else:
+            # Avoid to fail `datetime.fromisoformat` when does not exist "lastUpdated"
+            self.last_updated = datetime.now()
 
 
 class Repository:

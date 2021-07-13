@@ -8,8 +8,12 @@ from git_svn_monitor.core.config import PathLike
 
 class GitClient():
     def __init__(self, path: PathLike):
-        self.repo = git.Repo(path)
-        # self.repo = git.Repo.init(path, mkdir=True, bare=True)
+        try:
+            self.repo = git.Repo(path)
+            if self.repo.bare is False:
+                raise Exception(f"{path} is not bare repository, please set other")
+        except git.InvalidGitRepositoryError:
+            self.repo = git.Repo.init(path, mkdir=True, bare=True)
 
     def add_remote(self, name: str, url: str) -> None:
         """ Add remote repository. Skip to process if already exists same name
@@ -35,6 +39,8 @@ class GitClient():
         return self.repo.remotes[remote].fetch(prune=True)
 
     def iter_commits_(self, rev: Any, **kwargs: Any) -> Iterator[git.base.Commit]:
+        """ Get all commits, merge commit is ignored by default.
+        """
         kwargs.setdefault("no_merges", True)
         return self.repo.iter_commits(rev, **kwargs)
 
