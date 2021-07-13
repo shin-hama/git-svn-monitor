@@ -10,12 +10,16 @@ def main():
 
     setting_file = Path(TARGET_DIR) / "settings.json"
     settings = load_settings(setting_file)
-    print(settings)
     for repo in settings.get("repositories", []):
         if repo["name"] not in git_cli.remotes:
             git_cli.add_remote(repo["name"], repo["url"].replace("\\", "/"))
-        for f in git_cli.remotes[repo["name"]].fetch():
-            print(f)
+
+        print(f"------{repo['name']}------")
+        fetched = git_cli.remotes[repo["name"]].fetch(prune=True)
+        for commit in git_cli.iter_commits_from_branches(fetched):
+            print(f"commit: {commit}")
+            print(f"{commit.committed_datetime}  {commit.author}")
+            print(commit.message.strip())
 
 
 if __name__ == "__main__":

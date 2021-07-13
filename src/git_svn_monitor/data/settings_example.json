@@ -1,0 +1,9 @@
+{
+    "repositories": [
+        {
+            "name": "name",
+            "url": "url"
+        }
+    ],
+    "email": "email"
+}
