@@ -15,7 +15,7 @@ def main():
         if repo["name"] not in git_cli.remotes:
             git_cli.add_remote(repo["name"], repo["url"].replace("\\", "/"))
         for f in git_cli.remotes[repo["name"]].fetch():
-            print(f)
+            print(f.commit.message)
 
 
 if __name__ == "__main__":

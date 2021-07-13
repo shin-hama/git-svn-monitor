@@ -1,4 +1,6 @@
+from datetime import datetime
 from pathlib import Path
+from typing import Any
 
 import git
 
@@ -17,6 +19,10 @@ class GitClient():
             self.repo.create_remote(name, url=url)
         except git.GitError:
             pass
+
+    def iter_commits_from_branches(self, branches: Any, **kwargs):
+        kwargs.setdefault("no_merges", True)
+        return self.repo.iter_commits(branches, **kwargs)
 
     @property
     def remotes(self):
