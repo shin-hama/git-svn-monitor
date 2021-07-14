@@ -7,7 +7,7 @@ from git_svn_monitor.core.config import PathLike
 
 
 class GitClient():
-    def __init__(self, path: PathLike):
+    def __init__(self, path: PathLike) -> None:
         try:
             self.repo = git.Repo(path)
             if self.repo.bare is False:

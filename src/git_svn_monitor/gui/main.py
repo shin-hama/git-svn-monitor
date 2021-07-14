@@ -1,15 +1,16 @@
 import json
 import tkinter
+from typing import Any, Callable
 
 
 class Labels(tkinter.Frame):
-    def __init__(self, master=None):
+    def __init__(self, master: tkinter.Tk) -> None:
         super().__init__(master)
 
         self.pack()
         self.create_widget()
 
-    def create_widget(self):
+    def create_widget(self) -> None:
         url_entry = tkinter.Label(self, text="Repository URL")
         url_entry.grid(row=0, column=0)
 
@@ -21,7 +22,7 @@ class Labels(tkinter.Frame):
 
 
 class RepoEntry(tkinter.Frame):
-    def __init__(self, master=None, delete=None):
+    def __init__(self, master: tkinter.Tk, delete: Callable[[], Callable[[Any], None]]) -> None:
         super().__init__(master)
 
         self.url = tkinter.StringVar()
@@ -30,7 +31,7 @@ class RepoEntry(tkinter.Frame):
         self.pack()
         self.create_widget()
 
-    def create_widget(self):
+    def create_widget(self) -> None:
         url_entry = tkinter.Entry(self, textvariable=self.url)
         url_entry.grid(row=0, column=0, ipadx=150)
 
@@ -46,7 +47,13 @@ class RepoEntry(tkinter.Frame):
 
 
 class Buttons(tkinter.Frame):
-    def __init__(self, master=None, load=None, add=None, save=None):
+    def __init__(
+        self,
+        master: tkinter.Tk,
+        load: Callable[[], None],
+        add: Callable[[], None],
+        save: Callable[[], None]
+    ) -> None:
         super().__init__(master)
         self.target = tkinter.StringVar()
         self.load = load
@@ -55,7 +62,7 @@ class Buttons(tkinter.Frame):
         self.pack()
         self.create_widget()
 
-    def create_widget(self):
+    def create_widget(self) -> None:
         target_entry = tkinter.Entry(self, textvariable=self.target)
         target_entry.grid(row=0, column=0, ipadx=150)
         save_button = tkinter.Button(self, text="load", command=self.load)
@@ -67,14 +74,14 @@ class Buttons(tkinter.Frame):
 
 
 class Main():
-    def __init__(self):
+    def __init__(self) -> None:
         self.num = 1
         self.repos: list[RepoEntry] = []
 
-    def add_row(self):
+    def add_row(self) -> None:
         self.repos.append(RepoEntry(self.root, self.delete_row))
 
-    def save_json(self):
+    def save_json(self) -> None:
         """ output json file
         """
         target = self.button.target.get()
@@ -100,15 +107,15 @@ class Main():
         with open(target, mode="w", encoding="utf-8") as f:
             json.dump({"repositories": _repos}, f, allow_nan=False)
 
-    def delete_row(self):
+    def delete_row(self) -> Callable[[Any], None]:
         # Delete row that is pressed button
-        def _delete(event):
+        def _delete(event: Any) -> None:
             self.repos.remove(event.widget.master)
             event.widget.master.destroy()
 
         return _delete
 
-    def run(self):
+    def run(self) -> None:
         self.root = tkinter.Tk()
         self.root.title("Edit settings")
         self.root.minsize(width=400, height=0)
@@ -121,7 +128,7 @@ class Main():
 
         self.root.mainloop()
 
-    def load_setting(self):
+    def load_setting(self) -> None:
         target = self.button.target.get()
         with open(target, mode="r", encoding="utf-8") as f:
             settings = json.load(f)
