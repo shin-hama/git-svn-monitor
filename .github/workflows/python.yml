@@ -23,7 +23,20 @@ jobs:
         run: |
           curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
           source $HOME/.poetry/env
-          poetry install
+          poetry export --without-hashes --no-interaction --no-ansi --dev -f requirements.txt -o requirements.txt
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install .
       - name: Lint with flake8
         run: |
           # stop the build if there are Python syntax errors or undefined names
