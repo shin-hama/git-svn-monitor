@@ -1,4 +1,4 @@
-from git_svn_monitor.git_manager import GitManager
+from git_svn_monitor.git.git_manager import GitManager
 
 
 def main() -> None:
