@@ -84,8 +84,7 @@ def test_save_settings(setting: settings.Setting) -> None:
 def test_overwrite_settings(settings_file: Path, setting: settings.Setting) -> None:
     """ Overwrite settings file if already exists.
     """
-    setting.last_updated = datetime.now()
-    org_timestamp = settings_file.stat().st_mtime
+    setting.email = "updated@email.com"
     settings.save_settings(settings_file, setting)
-    updated_timestamp = settings_file.stat().st_mtime
-    assert org_timestamp < updated_timestamp
+    updated = settings.load_settings(settings_file)
+    assert updated.email == setting.email
