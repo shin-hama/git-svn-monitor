@@ -7,12 +7,12 @@ from git_svn_monitor.core.config import PathLike
 
 
 class GitClient():
-    def __init__(self, path: PathLike):
+    def __init__(self, path: PathLike) -> None:
         try:
             self.repo = git.Repo(path)
             if self.repo.bare is False:
                 raise Exception(f"{path} is not bare repository, please set other")
-        except git.InvalidGitRepositoryError:
+        except git.GitError:
             self.repo = git.Repo.init(path, mkdir=True, bare=True)
 
     def add_remote(self, name: str, url: str) -> None:
