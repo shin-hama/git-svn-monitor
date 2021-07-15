@@ -1,4 +1,4 @@
-from datetime import datetime
+# from datetime import datetime
 from typing import Any, Iterator
 
 import git
@@ -58,7 +58,7 @@ class GitManager:
             print(f"------{repo.name}------")
             yield self.git.fetch_remote(repo.name)
 
-    def update_settings(self):
+    def update_settings(self) -> None:
         """ Update last_updated timestamp and save it
         """
         # Comment out update process temporary for dev

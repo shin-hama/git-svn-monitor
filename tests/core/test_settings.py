@@ -5,7 +5,7 @@ from typing import Any, Iterator
 
 import pytest
 
-from git_svn_monitor.core import settings
+from src.git_svn_monitor.core import settings
 
 
 @pytest.fixture
