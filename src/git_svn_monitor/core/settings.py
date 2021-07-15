@@ -43,9 +43,7 @@ def load_settings(path: PathLike) -> Setting:
         with open(path, mode="r", encoding="utf-8") as f:
             settings = json.load(f, object_hook=_decode_settings)
     else:
-        _path.parent.mkdir(parents=True)
         settings = Setting()
-        save_settings(path, settings)
 
     return settings
 

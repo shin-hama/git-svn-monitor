@@ -60,11 +60,11 @@ def test_loaded_settings_value(
     assert _settings.repositories[0].url == setting.repositories[0].url
 
 
-def test_load_not_existed_path() -> None:
+def test_load_not_exist_path() -> None:
     """ Load default values when doesn't exist setting file.
     """
     default_settings = settings.Setting()
-    _settings = settings.load_settings("")
+    _settings = settings.load_settings("nothing.json")
     assert isinstance(_settings, settings.Setting)
     # last_updated is not same value because defined by datetime.now()
     assert _settings.email == default_settings.email
