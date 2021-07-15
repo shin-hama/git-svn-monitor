@@ -1,10 +1,11 @@
+# from datetime import datetime
 from typing import Any, Iterator
 
 import git
 from git.util import IterableList
 
 from git_svn_monitor.core.config import SETTING_FILE, TARGET_DIR
-from git_svn_monitor.core.settings import load_settings
+from git_svn_monitor.core.settings import load_settings, save_settings
 from git_svn_monitor.git_client import GitClient
 
 
@@ -26,6 +27,8 @@ class GitManager:
             for fetched in self.fetch_all_remote()
             for commit in self.iter_commits_from_last_updated(fetched)
         ])
+
+        self.update_settings()
         return commits
 
     def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[git.base.Commit]:
@@ -54,3 +57,10 @@ class GitManager:
 
             print(f"------{repo.name}------")
             yield self.git.fetch_remote(repo.name)
+
+    def update_settings(self) -> None:
+        """ Update last_updated timestamp and save it
+        """
+        # Comment out update process temporary for dev
+        # self.settings.last_updated = datetime.now()
+        save_settings(SETTING_FILE, self.settings)
