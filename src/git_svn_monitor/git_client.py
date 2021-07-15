@@ -12,7 +12,7 @@ class GitClient():
             self.repo = git.Repo(path)
             if self.repo.bare is False:
                 raise Exception(f"{path} is not bare repository, please set other")
-        except git.InvalidGitRepositoryError:
+        except git.GitError:
             self.repo = git.Repo.init(path, mkdir=True, bare=True)
 
     def add_remote(self, name: str, url: str) -> None:
