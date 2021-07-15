@@ -1,4 +1,4 @@
-from src.git_svn_monitor import __version__
+from git_svn_monitor import __version__
 
 
 def test_version() -> None:
