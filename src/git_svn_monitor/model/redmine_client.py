@@ -8,5 +8,9 @@ redmine = Redmine(
     key=REDMINE_API_KEY,
 )
 project = redmine.project.get("AutomationTEM")
+issue = redmine.issue.get("127163")
+print(issue.url)
+for j in issue.journals:
+    print(j.notes)
 
-print(project.url)
+redmine.issue.update("127163", notes="test api")
