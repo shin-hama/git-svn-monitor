@@ -1,16 +1,63 @@
-from redminelib import Redmine
+from datetime import datetime
+from typing import Any, Iterator
+from redminelib import Redmine, resources
 
-from git_svn_monitor.core.config import REDMINE_API_KEY
+from git_svn_monitor.core.config import DateLike, REDMINE_URL, REDMINE_API_KEY
 
 
-redmine = Redmine(
-    "http://redmine.jeol.co.jp/",
-    key=REDMINE_API_KEY,
-)
-project = redmine.project.get("AutomationTEM")
-issue = redmine.issue.get("127163")
-print(issue.url)
-for j in issue.journals:
-    print(j.notes)
+class RedmineClient:
+    def __init__(self) -> None:
+        self.redmine = Redmine(
+            url=REDMINE_URL,
+            key=REDMINE_API_KEY,
+        )
 
-redmine.issue.update("127163", notes="test api")
+    def update_issue(self, ticket_id: int, **kwargs: Any) -> resources.Issue:
+        """ Update issue for specified ticket.
+
+        Parameters
+        ----------
+        The parameter name of kwargs as below.
+        - subject (string): Issue subject
+        - description (string): Issue description
+        - notes (string): journal note that is called as history
+        - parent_issue_id (int): Parent issue id.
+        - done_ratio (int): Issue done ratio.
+
+        Return
+        ------
+        issue: redminelib.resources.Issue
+            The updated issue
+        """
+        self.redmine.issue.update(ticket_id, **kwargs)
+
+        return self.redmine.issue.get(ticket_id)
+
+    def iter_issues_filtered_by_updated_date(
+        self,
+        start: DateLike = None,
+        end: DateLike = None,
+        **kwargs: Any,
+    ) -> Iterator[resources.Issue]:
+        """ Get the issues that were updated in the specified period for current session user.
+
+        Parameters
+        ----------
+        start: str, date or None default is None
+            start date to filter. If this is None, you can get all issues.
+        end: str, date or None default is None
+            end date to filter. If this is None, you can get up to today.
+
+        Return
+        ------
+        issues:
+        """
+        filter = kwargs
+        if start is not None:
+            if end is None:
+                end = datetime.today().date()
+            filter["updated_on"] = f"><{start}|{end}"
+
+        u = self.redmine.user.get("current")
+        for issue in self.redmine.issue.filter(assigned_to_id=u.id, **filter):
+            yield issue
