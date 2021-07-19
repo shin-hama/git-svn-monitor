@@ -7,7 +7,6 @@ from git.util import IterableList
 from git_svn_monitor.core.config import SETTING_FILE, TARGET_DIR
 from git_svn_monitor.core.settings import load_settings, save_settings
 from git_svn_monitor.model.git_client import GitClient
-from git_svn_monitor.model.commit_parser import GitCommit
 
 
 class GitManager:
@@ -15,7 +14,7 @@ class GitManager:
         self.settings = load_settings(SETTING_FILE)
         self.git = GitClient(TARGET_DIR)
 
-    def parse_latest_commit(self) -> list[GitCommit]:
+    def get_latest_commits(self) -> list[git.base.Commit]:
         """ Get all commits after you got last time.
 
         Return
@@ -24,7 +23,7 @@ class GitManager:
             All commit information you can get.
         """
         commits = ([
-            GitCommit(commit)
+            commit
             for fetched in self.fetch_all_remote()
             for commit in self.iter_commits_from_last_updated(fetched)
         ])

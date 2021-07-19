@@ -1,15 +1,25 @@
+from collections import defaultdict
+
 from git_svn_monitor.model.git_manager import GitManager
+from git_svn_monitor.model.commit_parser import build_message_for_redmine, parse_ticket_number
 
 
 def main() -> None:
     git = GitManager()
-    commits = git.parse_latest_commit()
+    commits = git.get_latest_commits()
 
-    comment = f"{len(commits)} commits added from {git.settings.last_updated}"
-    commit_messages = [c.build_message_for_redmine() for c in commits]
+    commits_for_ticket: dict[str, list[str]] = defaultdict(list)
+    for commit in commits:
+        id = parse_ticket_number(commit.message)
+        if id is None:
+            continue
+        commits_for_ticket[id].append(build_message_for_redmine(commit))
 
-    result = "\n\n".join([comment, *commit_messages])
-    print(result)
+    for _id, _commits in commits_for_ticket.items():
+        summary = f"{len(_commits)} commits added from last updated"
+        result = "\n\n".join([summary, *_commits])
+        print(f"=====ticket id: {_id}=====")
+        print(result)
 
 
 if __name__ == "__main__":

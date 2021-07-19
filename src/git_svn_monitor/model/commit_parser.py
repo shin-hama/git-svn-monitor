@@ -1,32 +1,42 @@
 import re
+from typing import Optional
 
 import git
 
 
-class GitCommit:
-    ticket_pattern = re.compile("refs #[0-9]*")
+TICKET_PREFIX = "refs #"
+TICKET_PATTERN = re.compile(f"{TICKET_PREFIX}[0-9]*")
 
-    def __init__(self, commit: git.base.Commit) -> None:
-        self.commit = commit
 
-    def parse_tickets(self) -> list[str]:
-        """ Get list of all ticket number written in commit message.
-        We can find to match the pattern of `refs #****`.
-        """
-        _message = self.commit.message
-        results = self.ticket_pattern.findall(_message)
-        return results
+def parse_ticket_number(message: str) -> Optional[str]:
+    """ Get ticket number written in commit message.
+    We can find to match the pattern of `refs #****`.
 
-    def build_message_for_redmine(self) -> str:
-        """ Build message for upload redmine.
-        """
-        # title for the collapsed message
-        _title = f"{self.commit.summary.strip()}: {self.commit.author.name}".strip()
-        # Main containts is able to show when open the collapsed message.
-        _timestamp = f"Datetime: {self.commit.authored_datetime.isoformat()}"
-        _containts = f"{_timestamp}\n\n{self.commit.message.strip()}"
+    Return
+    ------
+    ticket_number: str or None
+        The ticket number of ticket registered in redmine is related to inputted commit.
+        Return None when a number is not written in commit message.
+    """
+    _message = message
+    matched = TICKET_PATTERN.search(_message)
+    if matched is None:
+        return None
 
-        # need new line at the both start and end of message to define collect collapsed sentence.
-        message = f"{{{{collapse({_title})\n{_containts}\n}}}}"
+    ticket_number = matched.group().replace(TICKET_PREFIX, "")
+    return ticket_number
 
-        return message
+
+def build_message_for_redmine(commit: git.base.Commit) -> str:
+    """ Build message for upload redmine.
+    """
+    # title for the collapsed message
+    _title = f"{commit.summary.strip()}: {commit.author.name}".strip()
+    # Main containts is able to show when open the collapsed message.
+    _timestamp = f"Datetime: {commit.authored_datetime.isoformat()}"
+    _containts = f"{_timestamp}\n\n{commit.message.strip()}"
+
+    # need new line at the both start and end of message to define collect collapsed sentence.
+    message = f"{{{{collapse({_title})\n{_containts}\n}}}}"
+
+    return message
