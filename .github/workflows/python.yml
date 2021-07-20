@@ -48,7 +48,7 @@ jobs:
           mypy .
       - name: Test with pytest
         env:
-          SECRET_KEY: ${{secrets.SECRET_KEY}}
-          TEST_MYSQL_HOST: localhost
+          REDMINE_API_KEY: ${{secrets.REDMINE_API_KEY}}
+          REDMINE_URL: 'None'
         run: |
           pytest .
