@@ -3,10 +3,18 @@ import os
 from pathlib import Path
 from typing import Optional, Union
 
-from dotenv import load_dotenv
+from pydantic import BaseSettings
 
 
-load_dotenv(".env")
+class EnvConfig(BaseSettings):
+    debug: Optional[bool]
+    redmine_url: str
+    redmine_api_key: str
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
 
 PathLike = Union[str, 'os.PathLike[str]']
 DateLike = Optional[Union[date, str]]
@@ -14,5 +22,4 @@ DateLike = Optional[Union[date, str]]
 TARGET_DIR = Path.home() / ".progress_monitor" / "monitor.git/"
 SETTING_FILE = Path(TARGET_DIR) / "settings.json"
 
-REDMINE_URL = os.getenv("REDMINE_URL", "")
-REDMINE_API_KEY = os.getenv("REDMINE_API_KEY", "")
+env_config = EnvConfig()

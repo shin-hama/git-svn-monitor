@@ -1,18 +1,18 @@
 from datetime import datetime
-from typing import Any, Iterator
+from typing import Any, Iterator, Union
 from redminelib import Redmine, resources
 
-from git_svn_monitor.core.config import DateLike, REDMINE_URL, REDMINE_API_KEY
+from git_svn_monitor.core.config import env_config, DateLike
 
 
 class RedmineClient:
     def __init__(self) -> None:
         self.redmine = Redmine(
-            url=REDMINE_URL,
-            key=REDMINE_API_KEY,
+            url=env_config.redmine_url,
+            key=env_config.redmine_api_key,
         )
 
-    def update_issue(self, ticket_id: int, **kwargs: Any) -> resources.Issue:
+    def update_issue(self, ticket_id: Union[int, str], **kwargs: Any) -> resources.Issue:
         """ Update issue for specified ticket.
 
         Parameters
