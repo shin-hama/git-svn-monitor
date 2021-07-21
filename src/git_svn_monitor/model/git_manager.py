@@ -1,5 +1,5 @@
 # from datetime import datetime
-from typing import Any, Iterator
+from typing import Any, Iterator, List
 
 import git
 from git.util import IterableList
@@ -14,7 +14,7 @@ class GitManager:
         self.settings = load_settings(SETTING_FILE)
         self.git = GitClient(TARGET_DIR)
 
-    def get_latest_commits(self) -> list[git.base.Commit]:
+    def get_latest_commits(self) -> List[git.base.Commit]:
         """ Get all commits after you got last time.
 
         Return

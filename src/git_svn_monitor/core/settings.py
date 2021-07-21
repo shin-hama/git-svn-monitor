@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Dict, List, Union
 
 from git_svn_monitor.core.config import PathLike
 
@@ -14,7 +14,7 @@ class Repository:
 
 class Setting:
     def __init__(self, **kwargs: Any) -> None:
-        self.repositories: list[Repository] = kwargs.get("repositories", [Repository()])
+        self.repositories: List[Repository] = kwargs.get("repositories", [Repository()])
         self.email: str = kwargs.get("email", "example@email.com")
 
         if "last_updated" in kwargs:
@@ -28,7 +28,7 @@ def load_settings(path: PathLike) -> Setting:
     """ Load setting file and convert into Setting instance. Return default instacne when setting
     file is not existed.
     """
-    def _decode_settings(data: dict[str, Any]) -> Union[Setting, Repository]:
+    def _decode_settings(data: Dict[str, Any]) -> Union[Setting, Repository]:
         if "repositories" in data:
             return Setting(**data)
         else:
@@ -51,7 +51,7 @@ def load_settings(path: PathLike) -> Setting:
 def save_settings(path: PathLike, setting: Setting) -> None:
     """ Save Setting instance to json. Overwrite file if already exists.
     """
-    def encode_settings(o: Any) -> Union[dict[str, Any], str]:
+    def encode_settings(o: Any) -> Union[Dict[str, Any], str]:
         if isinstance(o, datetime):
             return o.isoformat()
         if isinstance(o, (Repository, Setting)):

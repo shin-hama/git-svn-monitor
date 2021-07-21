@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Dict, Iterator
 
 import pytest
 
@@ -9,7 +9,7 @@ from git_svn_monitor.core import settings
 
 
 @pytest.fixture
-def sample_settings() -> dict[str, Any]:
+def sample_settings() -> Dict[str, Any]:
     return {
         "repositories": [{
             "name": "name",
@@ -21,7 +21,7 @@ def sample_settings() -> dict[str, Any]:
 
 
 @pytest.fixture
-def setting(sample_settings: dict[str, Any]) -> settings.Setting:
+def setting(sample_settings: Dict[str, Any]) -> settings.Setting:
     return settings.Setting(
         repositories=[settings.Repository(**sample_settings["repositories"][0])],
         email=sample_settings["email"],
@@ -30,7 +30,7 @@ def setting(sample_settings: dict[str, Any]) -> settings.Setting:
 
 
 @pytest.fixture
-def settings_file(sample_settings: dict[str, Any]) -> Iterator[Path]:
+def settings_file(sample_settings: Dict[str, Any]) -> Iterator[Path]:
     settings_file = Path(__file__).resolve().parent / "settings.json"
     with open(settings_file, mode="w", encoding="utf-8") as f:
         json.dump(sample_settings, f)

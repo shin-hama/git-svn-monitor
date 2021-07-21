@@ -1,6 +1,6 @@
 import json
 import tkinter
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List
 
 
 class Labels(tkinter.Frame):
@@ -94,8 +94,8 @@ class Buttons(tkinter.Frame):
 class Main():
     def __init__(self) -> None:
         self.num = 1
-        self.repos: list[RepoEntry] = []
-        self.settings: dict[str, Any] = {}
+        self.repos: List[RepoEntry] = []
+        self.settings: Dict[str, Any] = {}
         self.email_entry: EmailEntry
 
     def add_row(self) -> None:

@@ -5,7 +5,7 @@ description = ""
 authors = ["shamada <shamada@jeol.co.jp>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 GitPython = "^3.1.18"
 python-dotenv = "^0.18.0"
 python-redmine = "^2.3.0"

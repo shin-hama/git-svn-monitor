@@ -5,4 +5,5 @@ svn_client = get_client(
 )
 
 i = svn_client.info()
-print(i)
+for log in svn_client.log_default():
+    print(log.msg)

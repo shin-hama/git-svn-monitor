@@ -23,7 +23,7 @@ class GitClient():
         except git.GitError:
             pass
 
-    def fetch_remote(self, remote: str = "origin") -> IterableList[git.FetchInfo]:
+    def fetch_remote(self, remote: str = "origin") -> IterableList:
         """ Fetch the latest changes for all branch of specified remote.
 
         Parameter
@@ -45,5 +45,5 @@ class GitClient():
         return self.repo.iter_commits(rev, **kwargs)
 
     @property
-    def remotes(self) -> IterableList[git.Remote]:
+    def remotes(self) -> IterableList:
         return self.repo.remotes

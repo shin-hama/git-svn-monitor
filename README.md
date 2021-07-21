@@ -12,4 +12,4 @@ If you have already installed, you can get manually by below steps.
 1. Go to [https://www.visualsvn.com/downloads/]
 2. Download Apache Subversion command line tools
 3. Extract zip file
-4. Add bin directory in extracted file to PATH.
+4. Add the path for bin directory in extracted file to `PATH`.
