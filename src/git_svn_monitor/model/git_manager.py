@@ -22,11 +22,11 @@ class GitManager:
         commits: List of commit
             All commit information you can get.
         """
-        commits = ([
+        commits = [
             commit
             for fetched in self.fetch_all_remote()
             for commit in self.iter_commits_from_last_updated(fetched)
-        ])
+        ]
 
         self.update_settings()
         return commits

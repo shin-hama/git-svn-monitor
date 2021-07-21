@@ -40,6 +40,11 @@ class GitClient():
 
     def iter_commits_(self, rev: Any, **kwargs: Any) -> Iterator[git.base.Commit]:
         """ Get all commits, merge commit is ignored by default.
+
+        Parameters
+        ----------
+        rev : Any
+            Revision info to get commits
         """
         kwargs.setdefault("no_merges", True)
         return self.repo.iter_commits(rev, **kwargs)
