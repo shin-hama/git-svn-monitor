@@ -10,7 +10,7 @@ class SvnManager:
         self.settings = load_settings(SETTING_FILE)
         self.svn = SvnClient("")
 
-    def get_latest_commits(self) -> List:
+    def get_latest_commits(self) -> List[Any]:
         commits = [
             log for log in self.iter_commits_from_last_updated() if log.author == "shamada"
         ]

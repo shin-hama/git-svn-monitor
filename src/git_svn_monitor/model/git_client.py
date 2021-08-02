@@ -3,7 +3,7 @@ from typing import Any, Iterator
 import git
 from git.util import IterableList
 
-from git_svn_monitor.core.config import PathLike
+from git_svn_monitor.core.config import GitCommit, PathLike
 
 
 class GitClient():
@@ -23,7 +23,7 @@ class GitClient():
         except git.GitError:
             pass
 
-    def fetch_remote(self, remote: str = "origin") -> IterableList:
+    def fetch_remote(self, remote: str = "origin") -> IterableList[git.FetchInfo]:
         """ Fetch the latest changes for all branch of specified remote.
 
         Parameter
@@ -38,7 +38,7 @@ class GitClient():
         """
         return self.repo.remotes[remote].fetch(prune=True)
 
-    def iter_commits_(self, rev: Any, **kwargs: Any) -> Iterator[git.base.Commit]:
+    def iter_commits_(self, rev: Any, **kwargs: Any) -> Iterator[GitCommit]:
         """ Get all commits, merge commit is ignored by default.
 
         Parameters
@@ -50,5 +50,5 @@ class GitClient():
         return self.repo.iter_commits(rev, **kwargs)
 
     @property
-    def remotes(self) -> IterableList:
+    def remotes(self) -> IterableList[git.FetchInfo]:
         return self.repo.remotes

@@ -4,7 +4,7 @@ from typing import Any, Iterator, List
 import git
 from git.util import IterableList
 
-from git_svn_monitor.core.config import SETTING_FILE, TARGET_DIR
+from git_svn_monitor.core.config import GitCommit, SETTING_FILE, TARGET_DIR
 from git_svn_monitor.core.settings import load_settings, save_settings
 from git_svn_monitor.model.git_client import GitClient
 
@@ -14,7 +14,7 @@ class GitManager:
         self.settings = load_settings(SETTING_FILE)
         self.git = GitClient(TARGET_DIR)
 
-    def get_latest_commits(self) -> List[git.base.Commit]:
+    def get_latest_commits(self) -> List[GitCommit]:
         """ Get all commits after you got last time.
 
         Return
@@ -31,7 +31,7 @@ class GitManager:
         self.update_settings()
         return commits
 
-    def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[git.base.Commit]:
+    def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[GitCommit]:
         """ Get all the latest commits since the last update according to the configuration file.
 
         Parameter
