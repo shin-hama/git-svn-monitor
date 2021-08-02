@@ -1,6 +1,7 @@
 from typing import Any, Iterator
 
-from svn.exception import SvnException
+from svn.local import LocalClient
+from svn.remote import RemoteClient
 from svn.utility import get_client
 
 from git_svn_monitor.core.config import PathLike
@@ -8,12 +9,13 @@ from git_svn_monitor.core.config import PathLike
 
 class SvnClient:
     def __init__(self, path: PathLike):
+        """ Initialize client. Raise Exception when input path that is not svn repository.
+        """
         self.repo = get_client(path)
-        try:
-            self.repo.info()
-        except SvnException as e:
-            # Raise exception if path is not collect svn repository
-            raise e
+        if isinstance(self.repo, LocalClient):
+            self.repo.update()
+        elif isinstance(self.repo, RemoteClient) is False:
+            raise Exception(f"{path} is not svn repository")
 
     def iter_log(self, **kwargs: Any) -> Iterator[Any]:
         """ Get all commits log. You can get iterator of LogEntry instance. LogEntry has 'date',
