@@ -4,9 +4,10 @@ from typing import Any, Iterator, List
 import git
 from git.util import IterableList
 
-from git_svn_monitor.core.config import GitCommit, SETTING_FILE, TARGET_DIR
+from git_svn_monitor.core.config import SETTING_FILE, TARGET_DIR
 from git_svn_monitor.core.settings import load_settings, save_settings
 from git_svn_monitor.model.git_client import GitClient
+from git_svn_monitor.model.git_commit import GitCommit
 
 
 class GitManager:
@@ -44,7 +45,7 @@ class GitManager:
             "after": self.settings.last_updated,
         }
         for commit in self.git.iter_commits_(remotes, **args):
-            yield commit
+            yield GitCommit(commit)
 
     def fetch_all_remote(self) -> Iterator[IterableList[git.FetchInfo]]:
         """ Fetch the latest changes for all remotes specified in settings file.

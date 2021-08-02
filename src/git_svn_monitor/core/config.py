@@ -3,7 +3,6 @@ import os
 from pathlib import Path
 from typing import Optional, Union
 
-from git.objects import Commit
 from pydantic import BaseSettings
 
 
@@ -18,7 +17,6 @@ class EnvConfig(BaseSettings):
 
 
 DateLike = Optional[Union[date, str]]
-GitCommit = Commit
 PathLike = Union[str, 'os.PathLike[str]']
 
 TARGET_DIR = Path.home() / ".progress_monitor"

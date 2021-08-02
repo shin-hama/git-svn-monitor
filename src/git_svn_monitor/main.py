@@ -16,7 +16,10 @@ def main() -> None:
         id = parse_ticket_number(commit.message)
         if id is None:
             continue
-        commits_for_ticket[id].append(build_message_for_redmine(commit))
+        message = build_message_for_redmine(
+            commit.summary, commit.author, commit.message, commit.timestamp
+        )
+        commits_for_ticket[id].append(message)
 
     redmine = RedmineClient()
 

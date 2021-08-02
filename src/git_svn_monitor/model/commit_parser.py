@@ -1,7 +1,8 @@
+from datetime import datetime
 import re
 from typing import Optional, Union
 
-from git_svn_monitor.core.config import GitCommit
+from git_svn_monitor.core.config import DateLike, GitCommit
 
 
 TICKET_PREFIX = "refs #"
@@ -30,23 +31,26 @@ def parse_ticket_number(message: Union[bytes, str]) -> Optional[str]:
     return ticket_number
 
 
-def build_message_for_redmine(commit: GitCommit) -> str:
+def build_message_for_redmine(
+    summary: str,
+    author_name: str,
+    message: str,
+    timestamp: Union[datetime, str]
+) -> str:
     """ Build message for upload redmine.
     """
-    _summary = commit.summary.strip()
-    if isinstance(_summary, bytes):
-        _summary = _summary.decode("utf-8")
     # title for the collapsed message
-    _title = f"{_summary}: {commit.author.name}".strip()
+    _title = f"{summary}: {author_name}".strip()
 
-    _message = commit.message.strip()
-    if isinstance(_message, bytes):
-        _message = _message.decode("utf-8")
+    # Set timestamp message for it is committed
+    if isinstance(timestamp, datetime):
+        timestamp = timestamp.isoformat()
+    _timestamp = f"Datetime: {timestamp}"
+
     # Main containts is able to show when open the collapsed message.
-    _timestamp = f"Datetime: {commit.authored_datetime.isoformat()}"
-    _containts = f"{_timestamp}\n\n{_message}"
+    _containts = f"{_timestamp}\n\n{message}"
 
     # need new line at the both start and end of message to define collect collapsed sentence.
-    message = f"{{{{collapse({_title})\n{_containts}\n}}}}"
+    msg = f"{{{{collapse({_title})\n{_containts}\n}}}}"
 
-    return message
+    return msg
