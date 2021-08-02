@@ -8,11 +8,11 @@ from git_svn_monitor.model.svn_client import SvnClient
 class SvnManager:
     def __init__(self) -> None:
         self.settings = load_settings(SETTING_FILE)
-        self.svn = SvnClient("")
+        self.svn = SvnClient(r"file:///D:/workspace/test/subversion")
 
     def get_latest_commits(self) -> List[Any]:
         commits = [
-            log for log in self.iter_commits_from_last_updated() if log.author == "shamada"
+            log for log in self.iter_commits_from_last_updated() if log.author == "hamada"
         ]
 
         print(commits)

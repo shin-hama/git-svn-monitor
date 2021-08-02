@@ -12,7 +12,7 @@ from git_svn_monitor.model.git_client import GitClient
 class GitManager:
     def __init__(self) -> None:
         self.settings = load_settings(SETTING_FILE)
-        self.git = GitClient(TARGET_DIR)
+        self.git = GitClient(TARGET_DIR / "monitor.git")
 
     def get_latest_commits(self) -> List[GitCommit]:
         """ Get all commits after you got last time.
@@ -40,7 +40,7 @@ class GitManager:
             The information of reachable git repositories
         """
         args = {
-            "author": self.settings.email,
+            "author": self.settings.git_author,
             "after": self.settings.last_updated,
         }
         for commit in self.git.iter_commits_(remotes, **args):
@@ -49,7 +49,7 @@ class GitManager:
     def fetch_all_remote(self) -> Iterator[IterableList[git.FetchInfo]]:
         """ Fetch the latest changes for all remotes specified in settings file.
         """
-        for repo in self.settings.repositories:
+        for repo in self.settings.git_repositories:
             if repo.url == "" or repo.name == "":
                 continue
             if all([repo.name != remote.name for remote in self.git.remotes]):

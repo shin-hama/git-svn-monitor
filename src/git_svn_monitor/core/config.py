@@ -21,7 +21,7 @@ DateLike = Optional[Union[date, str]]
 GitCommit = Commit
 PathLike = Union[str, 'os.PathLike[str]']
 
-TARGET_DIR = Path.home() / ".progress_monitor" / "monitor.git/"
+TARGET_DIR = Path.home() / ".progress_monitor"
 SETTING_FILE = Path(TARGET_DIR) / "settings.json"
 
 env_config = EnvConfig()

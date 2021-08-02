@@ -14,8 +14,10 @@ class Repository:
 
 class Setting:
     def __init__(self, **kwargs: Any) -> None:
-        self.repositories: List[Repository] = kwargs.get("repositories", [Repository()])
-        self.email: str = kwargs.get("email", "example@email.com")
+        self.git_repositories: List[Repository] = kwargs.get("git_repositories", [Repository()])
+        self.svn_repositories: List[Repository] = kwargs.get("svn_repositories", [Repository()])
+        self.git_author: str = kwargs.get("git_author", "author")
+        self.svn_author: str = kwargs.get("svn_author", "author")
 
         if "last_updated" in kwargs:
             self.last_updated: datetime = datetime.fromisoformat(kwargs["last_updated"])
@@ -29,7 +31,7 @@ def load_settings(path: PathLike) -> Setting:
     file is not existed.
     """
     def _decode_settings(data: Dict[str, Any]) -> Union[Setting, Repository]:
-        if "repositories" in data:
+        if "git_repositories" in data:
             return Setting(**data)
         else:
             # nested data
@@ -59,4 +61,4 @@ def save_settings(path: PathLike, setting: Setting) -> None:
         return o
 
     with open(path, mode="w", encoding="utf-8") as f:
-        json.dump(setting, f, default=encode_settings)
+        json.dump(setting, f, default=encode_settings, indent=2)
