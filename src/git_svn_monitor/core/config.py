@@ -23,4 +23,7 @@ TARGET_DIR = Path.home() / ".progress_monitor"
 SETTING_FILE = Path(TARGET_DIR) / "settings.json"
 GIT_LOCAL_REPOSITORY = TARGET_DIR / "monitor.git"
 
+# Logging in target directory
+LOG_FILE = TARGET_DIR / "log" / "script.log"
+
 env_config = EnvConfig()

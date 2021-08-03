@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Any, Iterator
 
 import git
@@ -10,6 +11,9 @@ from git_svn_monitor.model.git_client import GitClient
 from git_svn_monitor.model.svn_client import SvnClient
 from git_svn_monitor.model.commit_parser import BaseCommit, GitCommit, SvnCommit
 from git_svn_monitor.util.log_entry import LogEntry
+
+
+logger = getLogger(__name__)
 
 
 class BaseManager(object):
@@ -49,6 +53,7 @@ class GitManager(BaseManager):
             "author": self.settings.git_author,
             "after": self.settings.last_updated,
         }
+        logger.info(f"Git log condition: {args}")
         return self.git.iter_commits_(remotes, **args)
 
     def fetch_all_remote(self) -> Iterator[IterableList[git.FetchInfo]]:
@@ -56,11 +61,12 @@ class GitManager(BaseManager):
         """
         for repo in self.settings.git_repositories:
             if repo.url == "" or repo.name == "":
+                logger.warning("repo has no information to fetch")
                 continue
+            logger.info(f"Fetch to: {repo}")
             if all([repo.name != remote.name for remote in self.git.remotes]):
                 self.git.add_remote(repo.name, repo.url.replace("\\", "/"))
 
-            print(f"------{repo.name}------")
             yield self.git.fetch_remote(repo.name)
 
 
@@ -78,6 +84,7 @@ class SvnManager(BaseManager):
             Commit log data is wrapped BaseCommit class
         """
         for repo in self.settings.svn_repositories:
+            logger.info(f"Fetch to: {repo}")
             for log in self.iter_commits_from_last_updated(repo.url):
                 if log.author == self.settings.svn_author:
                     yield SvnCommit(log)

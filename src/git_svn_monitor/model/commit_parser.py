@@ -1,4 +1,5 @@
 from datetime import datetime
+from logging import getLogger
 import re
 from typing import Any, Optional, Union
 
@@ -6,6 +7,8 @@ from git.objects import Commit
 
 from git_svn_monitor.util.log_entry import LogEntry
 
+
+logger = getLogger(__name__)
 
 ID_PREFIX = "refs #"
 TICKET_PATTERN = re.compile(f"{ID_PREFIX}[0-9]*")
@@ -32,10 +35,15 @@ class BaseCommit(object):
         """
         matched = TICKET_PATTERN.search(self.message)
         if matched is None:
+            logger.debug("No ticket refs: {}".format(self.message.replace('\n', '\\n')))
             return None
 
         ticket_number = matched.group().replace(ID_PREFIX, "")
-        return int(ticket_number)
+        try:
+            return int(ticket_number)
+        except Exception as e:
+            logger.error(f"Fail to convert to int: {ticket_number}")
+            raise e
 
     def build_message_for_redmine(self) -> str:
         """ Build message for upload redmine.

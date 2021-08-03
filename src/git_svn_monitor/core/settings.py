@@ -1,15 +1,25 @@
 from datetime import datetime
 import json
+from logging import getLogger
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from git_svn_monitor.core.config import PathLike, SETTING_FILE
 
 
+logger = getLogger(__name__)
+
+
 class Repository:
     def __init__(self, **kwargs: Any) -> None:
         self.name: str = kwargs.get("name", "")
         self.url: str = kwargs.get("url", "")
+
+    def __str__(self) -> str:
+        return (
+            f"name: {self.name}, "
+            f"url: {self.url}"
+        )
 
 
 class Setting:
@@ -25,6 +35,15 @@ class Setting:
             # Avoid to fail `datetime.fromisoformat` when does not exist "lastUpdated"
             self.last_updated = datetime.now()
 
+    def __str__(self) -> str:
+        return (
+            f"git_repositories: {[str(repo) for repo in self.git_repositories]}, "
+            f"svn_repositories: {[str(repo) for repo in self.svn_repositories]}, "
+            f"git_author: {self.git_author}, "
+            f"svn_author: {self.svn_author}, "
+            f"last_updated: {self.last_updated}"
+        )
+
 
 def load_settings(path: PathLike = SETTING_FILE) -> Setting:
     """ Load setting file and convert into Setting instance. Return default instacne when setting
@@ -36,16 +55,21 @@ def load_settings(path: PathLike = SETTING_FILE) -> Setting:
         else:
             # nested data
             return Repository(**data)
-
+    logger.info(f"load setting file: {path}")
     _path = Path(path)
     if _path.is_dir():
-        raise Exception(f"{path} is directory, not setting file")
+        msg = f"{path} is directory, not setting file"
+        logger.error(msg)
+        raise Exception(msg)
 
     if _path.exists():
         with open(path, mode="r", encoding="utf-8") as f:
             setting = json.load(f, object_hook=_decode_settings)
     else:
+        logger.warning("Use default setting since file doesn't exist.")
         setting = Setting()
+
+    logger.debug(f"Current setting: {setting}")
 
     return setting
 
@@ -60,8 +84,11 @@ def save_settings(filepath: PathLike = SETTING_FILE, settings: Optional[Setting]
             return o.__dict__
         return o
 
+    logger.info(f"save setting file: {filepath}")
+
     if settings is None:
         settings = Settings
+    logger.debug(f"setting parameter: {settings}")
 
     with open(filepath, mode="w", encoding="utf-8") as f:
         json.dump(settings, f, default=encode_settings, indent=2)
