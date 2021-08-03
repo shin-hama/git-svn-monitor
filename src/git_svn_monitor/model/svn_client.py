@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Any, Iterator
 
 from svn.local import LocalClient
@@ -8,15 +9,21 @@ from git_svn_monitor.core.config import PathLike
 from git_svn_monitor.util.log_entry import LogEntry
 
 
+logger = getLogger(__name__)
+
+
 class SvnClient:
     def __init__(self, path: PathLike):
         """ Initialize client. Raise Exception when input path that is not svn repository.
         """
+        logger.info(f"SVN Client: {path}")
         self.repo = get_client(path)
         if isinstance(self.repo, LocalClient):
             self.repo.update()
         elif isinstance(self.repo, RemoteClient) is False:
-            raise Exception(f"{path} is not svn repository")
+            msg = f"{path} is not svn repository"
+            logger.error(msg)
+            raise Exception(msg)
 
     def iter_log(self, **kwargs: Any) -> Iterator[LogEntry]:
         """ Get all commits log. You can get iterator of LogEntry instance. LogEntry has 'date',
@@ -41,4 +48,5 @@ class SvnClient:
         log_entry: Iterator[LogEntry]
             The object of commit log
         """
+        logger.info("Get subversion commit log")
         return self.repo.log_default(**kwargs)

@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Any, Iterator
 
 import git
@@ -7,21 +8,31 @@ from git.util import IterableList
 from git_svn_monitor.core.config import PathLike
 
 
+logger = getLogger(__name__)
+
+
 class GitClient():
     def __init__(self, path: PathLike) -> None:
         try:
             self.repo = git.Repo(path)
             if self.repo.bare is False:
-                raise Exception(f"{path} is not bare repository, please set other")
+                msg = f"{path} is not bare repository, please use other repository"
+                logger.error(msg)
+                raise Exception(msg)
         except git.GitError:
+            logger.info(f"{path} is not git repository, create new one.")
             self.repo = git.Repo.init(path, mkdir=True, bare=True)
+        logger.info(f"Git client: {path}")
 
     def add_remote(self, name: str, url: str) -> None:
         """ Add remote repository. Skip to process if already exists same name
         """
         try:
             self.repo.create_remote(name, url=url)
+            logger.info("Add new remote repository")
+            logger.info(f"name: {name}, url: {url}")
         except git.GitError:
+            logger.debug(f"{name} is already existed.")
             pass
 
     def fetch_remote(self, remote: str = "origin") -> IterableList[git.FetchInfo]:
@@ -37,6 +48,7 @@ class GitClient():
         fetch_info: IterableList[git.FetchInfo]
             The latest changes for all branches.
         """
+        logger.info(f"Fetch to {remote}")
         return self.repo.remotes[remote].fetch(prune=True)
 
     def iter_commits_(self, rev: Any, **kwargs: Any) -> Iterator[Commit]:
@@ -47,6 +59,8 @@ class GitClient():
         rev : Any
             Revision info to get commits
         """
+        logger.info("Get commits")
+        logger.debug(f"revision: {rev}, kwargs: {kwargs}")
         kwargs.setdefault("no_merges", True)
         return self.repo.iter_commits(rev, **kwargs)
 

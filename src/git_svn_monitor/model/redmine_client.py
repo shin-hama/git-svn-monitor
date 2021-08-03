@@ -1,8 +1,13 @@
 from datetime import datetime
+from logging import getLogger
 from typing import Any, Iterator, Union
+
 from redminelib import Redmine, resources
 
 from git_svn_monitor.core.config import env_config, DateLike
+
+
+logger = getLogger(__name__)
 
 
 class RedmineClient:
@@ -29,6 +34,7 @@ class RedmineClient:
         issue: redminelib.resources.Issue
             The updated issue
         """
+        logger.debug(f"Update: #{ticket_id}, kwargs: {kwargs}")
         self.redmine.issue.update(ticket_id, **kwargs)
 
         return self.redmine.issue.get(ticket_id)
@@ -52,6 +58,7 @@ class RedmineClient:
         ------
         issues:
         """
+        logger.info("Get issues")
         filter = kwargs
         if start is not None:
             if end is None:
@@ -59,5 +66,6 @@ class RedmineClient:
             filter["updated_on"] = f"><{start}|{end}"
 
         u = self.redmine.user.get("current")
+        logger.debug(f"user_id: {u.id}, fileter: {filter}")
         for issue in self.redmine.issue.filter(assigned_to_id=u.id, **filter):
             yield issue

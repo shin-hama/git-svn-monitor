@@ -21,6 +21,9 @@ def setup_logger(name: str) -> None:
 
     # set limits to 1MB
     max_bytes = 1024*1024
+    if LOG_FILE.exists() is False:
+        LOG_FILE.parent.mkdir(parents=True)
+        LOG_FILE.touch()
     fh = logging.handlers.RotatingFileHandler(
         LOG_FILE, maxBytes=max_bytes, backupCount=5, encoding="utf-8"
     )

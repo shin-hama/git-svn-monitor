@@ -1,4 +1,5 @@
 from datetime import datetime
+from logging import getLogger
 import re
 from typing import Any, Optional, Union
 
@@ -6,6 +7,8 @@ from git.objects import Commit
 
 from git_svn_monitor.util.log_entry import LogEntry
 
+
+logger = getLogger(__name__)
 
 ID_PREFIX = "refs #"
 TICKET_PATTERN = re.compile(f"{ID_PREFIX}[0-9]*")
@@ -32,7 +35,9 @@ class BaseCommit(object):
         """
         matched = TICKET_PATTERN.search(self.message)
         if matched is None:
+            logger.debug(f"No ticket refs: {self.message}")
             return None
+        logger.debug(f"Matched: {matched}")
 
         ticket_number = matched.group().replace(ID_PREFIX, "")
         return int(ticket_number)
