@@ -2,6 +2,7 @@ from collections import defaultdict
 from typing import Dict, List
 
 from git_svn_monitor.core.config import env_config
+from git_svn_monitor.core.settings import save_settings
 from git_svn_monitor.model.redmine_client import RedmineClient
 from git_svn_monitor.model.manager import BaseManager, GitManager, SvnManager
 
@@ -17,6 +18,8 @@ def main() -> None:
                 continue
             message = commit.build_message_for_redmine()
             commits_for_ticket[id].append(message)
+
+    save_settings()
 
     redmine = RedmineClient()
 

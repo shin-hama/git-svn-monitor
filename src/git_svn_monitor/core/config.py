@@ -21,5 +21,6 @@ PathLike = Union[str, 'os.PathLike[str]']
 
 TARGET_DIR = Path.home() / ".progress_monitor"
 SETTING_FILE = Path(TARGET_DIR) / "settings.json"
+GIT_LOCAL_REPOSITORY = TARGET_DIR / "monitor.git"
 
 env_config = EnvConfig()

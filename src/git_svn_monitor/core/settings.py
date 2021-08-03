@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List, Union
 
-from git_svn_monitor.core.config import PathLike
+from git_svn_monitor.core.config import env_config, PathLike, SETTING_FILE
 
 
 class Repository:
@@ -26,16 +26,22 @@ class Setting:
             self.last_updated = datetime.now()
 
 
-def load_settings(path: PathLike) -> Setting:
+_setting: Union[Setting, None] = None
+
+
+def load_settings(path: PathLike = SETTING_FILE) -> Setting:
     """ Load setting file and convert into Setting instance. Return default instacne when setting
     file is not existed.
     """
     def _decode_settings(data: Dict[str, Any]) -> Union[Setting, Repository]:
-        if "git_repositories" in data:
+        if "git_repositories" in data or "svn_repositories" in data:
             return Setting(**data)
         else:
             # nested data
             return Repository(**data)
+    global _setting
+    if _setting is not None:
+        return _setting
 
     _path = Path(path)
     if _path.is_dir():
@@ -43,15 +49,15 @@ def load_settings(path: PathLike) -> Setting:
 
     if _path.exists():
         with open(path, mode="r", encoding="utf-8") as f:
-            settings = json.load(f, object_hook=_decode_settings)
+            _setting = json.load(f, object_hook=_decode_settings)
     else:
-        settings = Setting()
+        _setting = Setting()
 
-    return settings
+    return _setting
 
 
-def save_settings(path: PathLike, setting: Setting) -> None:
-    """ Save Setting instance to json. Overwrite file if already exists.
+def save_settings() -> None:
+    """ Save Setting instance to json to update last update. Overwrite file if already exists.
     """
     def encode_settings(o: Any) -> Union[Dict[str, Any], str]:
         if isinstance(o, datetime):
@@ -60,5 +66,11 @@ def save_settings(path: PathLike, setting: Setting) -> None:
             return o.__dict__
         return o
 
-    with open(path, mode="w", encoding="utf-8") as f:
-        json.dump(setting, f, default=encode_settings, indent=2)
+    if _setting is None:
+        return None
+
+    if env_config.debug is False:
+        _setting.last_updated = datetime.now()
+
+    with open(SETTING_FILE, mode="w", encoding="utf-8") as f:
+        json.dump(_setting, f, default=encode_settings, indent=2)

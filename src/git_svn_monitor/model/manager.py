@@ -4,8 +4,8 @@ import git
 from git.objects import Commit
 from git.util import IterableList
 
-from git_svn_monitor.core.config import SETTING_FILE, TARGET_DIR
-from git_svn_monitor.core.settings import load_settings, save_settings
+from git_svn_monitor.core.config import GIT_LOCAL_REPOSITORY
+from git_svn_monitor.core.settings import load_settings
 from git_svn_monitor.model.git_client import GitClient
 from git_svn_monitor.model.svn_client import SvnClient
 from git_svn_monitor.model.commit_parser import BaseCommit, GitCommit, SvnCommit
@@ -13,7 +13,7 @@ from git_svn_monitor.model.commit_parser import BaseCommit, GitCommit, SvnCommit
 
 class BaseManager(object):
     def __init__(self) -> None:
-        self.settings = load_settings(SETTING_FILE)
+        self.settings = load_settings()
 
     def iter_latest_commits(self) -> Iterator[BaseCommit]:
         raise NotImplementedError
@@ -22,7 +22,7 @@ class BaseManager(object):
 class GitManager(BaseManager):
     def __init__(self) -> None:
         super().__init__()
-        self.git = GitClient(TARGET_DIR / "monitor.git")
+        self.git = GitClient(GIT_LOCAL_REPOSITORY)
 
     def iter_latest_commits(self) -> Iterator[GitCommit]:
         """ Get all commits after you got last time.
@@ -35,8 +35,6 @@ class GitManager(BaseManager):
         for fetched in self.fetch_all_remote():
             for commit in self.iter_commits_from_last_updated(fetched):
                 yield GitCommit(commit)
-
-        self.update_settings()
 
     def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[Commit]:
         """ Get all the latest commits since the last update according to the configuration file.
@@ -63,13 +61,6 @@ class GitManager(BaseManager):
 
             print(f"------{repo.name}------")
             yield self.git.fetch_remote(repo.name)
-
-    def update_settings(self) -> None:
-        """ Update last_updated timestamp and save it
-        """
-        # Comment out update process temporary for dev
-        # self.settings.last_updated = datetime.now()
-        save_settings(SETTING_FILE, self.settings)
 
 
 class SvnManager(BaseManager):
