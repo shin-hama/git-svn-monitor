@@ -1,7 +1,8 @@
 # from datetime import datetime
-from typing import Any, Iterator, List
+from typing import Any, Iterator
 
 import git
+from git.objects import Commit
 from git.util import IterableList
 
 from git_svn_monitor.core.config import SETTING_FILE, TARGET_DIR
@@ -15,7 +16,7 @@ class GitManager:
         self.settings = load_settings(SETTING_FILE)
         self.git = GitClient(TARGET_DIR / "monitor.git")
 
-    def get_latest_commits(self) -> List[GitCommit]:
+    def get_latest_commits(self) -> Iterator[GitCommit]:
         """ Get all commits after you got last time.
 
         Return
@@ -23,16 +24,13 @@ class GitManager:
         commits: List of commit
             All commit information you can get.
         """
-        commits = [
-            commit
-            for fetched in self.fetch_all_remote()
-            for commit in self.iter_commits_from_last_updated(fetched)
-        ]
+        for fetched in self.fetch_all_remote():
+            for commit in self.iter_commits_from_last_updated(fetched):
+                yield GitCommit(commit)
 
         self.update_settings()
-        return commits
 
-    def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[GitCommit]:
+    def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[Commit]:
         """ Get all the latest commits since the last update according to the configuration file.
 
         Parameter
@@ -44,8 +42,7 @@ class GitManager:
             "author": self.settings.git_author,
             "after": self.settings.last_updated,
         }
-        for commit in self.git.iter_commits_(remotes, **args):
-            yield GitCommit(commit)
+        return self.git.iter_commits_(remotes, **args)
 
     def fetch_all_remote(self) -> Iterator[IterableList[git.FetchInfo]]:
         """ Fetch the latest changes for all remotes specified in settings file.

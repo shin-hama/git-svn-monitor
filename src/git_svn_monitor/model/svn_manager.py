@@ -1,4 +1,4 @@
-from typing import Any, Iterator, List
+from typing import Any, Iterator
 
 from git_svn_monitor.core.config import SETTING_FILE
 from git_svn_monitor.core.settings import load_settings
@@ -10,18 +10,14 @@ class SvnManager:
     def __init__(self) -> None:
         self.settings = load_settings(SETTING_FILE)
 
-    def get_latest_commits(self) -> List[SvnCommit]:
-        """ Get all commits log for all repositories written in settings file
+    def get_latest_commits(self) -> Iterator[SvnCommit]:
+        """ Get all commits log that is committed by specific author for all repositories written
+        in settings file
         """
-        commits = [
-            SvnCommit(log)
-            for repo in self.settings.svn_repositories
-            for log in self.iter_commits_from_last_updated(repo.url)
-            if log.author == self.settings.svn_author
-        ]
-
-        print(commits)
-        return commits
+        for repo in self.settings.svn_repositories:
+            for log in self.iter_commits_from_last_updated(repo.url):
+                if log.author == self.settings.svn_author:
+                    yield SvnCommit(log)
 
     def iter_commits_from_last_updated(self, url: str) -> Iterator[Any]:
         client = SvnClient(url)

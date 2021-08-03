@@ -1,22 +1,25 @@
 from collections import defaultdict
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from git_svn_monitor.core.config import env_config
 from git_svn_monitor.model.git_manager import GitManager
 from git_svn_monitor.model.redmine_client import RedmineClient
+from git_svn_monitor.model.svn_manager import SvnManager
 
 
 def main() -> None:
     git = GitManager()
-    commits = git.get_latest_commits()
+    svn = SvnManager()
+    targets: List[Union[GitManager, SvnManager]] = [git, svn]
 
     commits_for_ticket: Dict[str, List[str]] = defaultdict(list)
-    for commit in commits:
-        id = commit.parse_ticket_number()
-        if id is None:
-            continue
-        message = commit.build_message_for_redmine()
-        commits_for_ticket[id].append(message)
+    for mgr in targets:
+        for commit in mgr.get_latest_commits():
+            id = commit.parse_ticket_number()
+            if id is None:
+                continue
+            message = commit.build_message_for_redmine()
+            commits_for_ticket[id].append(message)
 
     redmine = RedmineClient()
 
