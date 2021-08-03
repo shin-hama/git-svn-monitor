@@ -35,12 +35,15 @@ class BaseCommit(object):
         """
         matched = TICKET_PATTERN.search(self.message)
         if matched is None:
-            logger.debug(f"No ticket refs: {self.message}")
+            logger.debug("No ticket refs: {}".format(self.message.replace('\n', '\\n')))
             return None
-        logger.debug(f"Matched: {matched}")
 
         ticket_number = matched.group().replace(ID_PREFIX, "")
-        return int(ticket_number)
+        try:
+            return int(ticket_number)
+        except Exception as e:
+            logger.error(f"Fail to convert to int: {ticket_number}")
+            raise e
 
     def build_message_for_redmine(self) -> str:
         """ Build message for upload redmine.

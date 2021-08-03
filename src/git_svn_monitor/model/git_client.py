@@ -48,7 +48,6 @@ class GitClient():
         fetch_info: IterableList[git.FetchInfo]
             The latest changes for all branches.
         """
-        logger.info(f"Fetch to {remote}")
         return self.repo.remotes[remote].fetch(prune=True)
 
     def iter_commits_(self, rev: Any, **kwargs: Any) -> Iterator[Commit]:
@@ -60,7 +59,7 @@ class GitClient():
             Revision info to get commits
         """
         logger.info("Get commits")
-        logger.debug(f"revision: {rev}, kwargs: {kwargs}")
+        logger.debug(f"revision: {[r.ref for r in rev]}, kwargs: {kwargs}")
         kwargs.setdefault("no_merges", True)
         return self.repo.iter_commits(rev, **kwargs)
 

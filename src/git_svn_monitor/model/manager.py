@@ -38,7 +38,6 @@ class GitManager(BaseManager):
             All commit information you can get.
         """
         for fetched in self.fetch_all_remote():
-            logger.info(f"fetch info: {fetched}")
             for commit in self.iter_commits_from_last_updated(fetched):
                 yield GitCommit(commit)
 

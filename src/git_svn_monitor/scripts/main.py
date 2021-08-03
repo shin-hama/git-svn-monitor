@@ -47,7 +47,7 @@ def update_redmine(commits: Dict[int, List[str]]) -> None:
         note = "\n\n".join([summary, *_commits])
         if env_config.debug:
             logger.debug(f"=====ticket id: {_id}=====")
-            logger.debug(note)
+            logger.debug(note.replace("\n", "\\n"))
         else:
             redmine.update_issue(_id, notes=note)
 

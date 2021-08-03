@@ -37,8 +37,8 @@ class Setting:
 
     def __str__(self) -> str:
         return (
-            f"git_repositories: {self.git_repositories}, "
-            f"svn_repositories: {self.svn_repositories}, "
+            f"git_repositories: {[str(repo) for repo in self.git_repositories]}, "
+            f"svn_repositories: {[str(repo) for repo in self.svn_repositories]}, "
             f"git_author: {self.git_author}, "
             f"svn_author: {self.svn_author}, "
             f"last_updated: {self.last_updated}"
