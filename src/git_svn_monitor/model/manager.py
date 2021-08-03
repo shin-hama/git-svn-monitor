@@ -1,4 +1,3 @@
-# from datetime import datetime
 from typing import Any, Iterator
 
 import git
@@ -8,15 +7,24 @@ from git.util import IterableList
 from git_svn_monitor.core.config import SETTING_FILE, TARGET_DIR
 from git_svn_monitor.core.settings import load_settings, save_settings
 from git_svn_monitor.model.git_client import GitClient
-from git_svn_monitor.model.commit_parser import GitCommit
+from git_svn_monitor.model.svn_client import SvnClient
+from git_svn_monitor.model.commit_parser import BaseCommit, GitCommit, SvnCommit
 
 
-class GitManager:
+class BaseManager(object):
     def __init__(self) -> None:
         self.settings = load_settings(SETTING_FILE)
+
+    def iter_latest_commits(self) -> Iterator[BaseCommit]:
+        raise NotImplementedError
+
+
+class GitManager(BaseManager):
+    def __init__(self) -> None:
+        super().__init__()
         self.git = GitClient(TARGET_DIR / "monitor.git")
 
-    def get_latest_commits(self) -> Iterator[GitCommit]:
+    def iter_latest_commits(self) -> Iterator[GitCommit]:
         """ Get all commits after you got last time.
 
         Return
@@ -62,3 +70,25 @@ class GitManager:
         # Comment out update process temporary for dev
         # self.settings.last_updated = datetime.now()
         save_settings(SETTING_FILE, self.settings)
+
+
+class SvnManager(BaseManager):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def iter_latest_commits(self) -> Iterator[SvnCommit]:
+        """ Get all commits log that is committed by specific author for all repositories written
+        in settings file
+        """
+        for repo in self.settings.svn_repositories:
+            for log in self.iter_commits_from_last_updated(repo.url):
+                if log.author == self.settings.svn_author:
+                    yield SvnCommit(log)
+
+    def iter_commits_from_last_updated(self, url: str) -> Iterator[Any]:
+        client = SvnClient(url)
+        args = {
+            "timestamp_from_dt": self.settings.last_updated
+        }
+
+        return client.iter_log(**args)
