@@ -71,6 +71,11 @@ class SvnManager(BaseManager):
     def iter_latest_commits(self) -> Iterator[SvnCommit]:
         """ Get all commits log that is committed by specific author for all repositories written
         in settings file
+
+        Return
+        ------
+        SvnCommit: SvnCommit
+            Commit log data is wrapped BaseCommit class
         """
         for repo in self.settings.svn_repositories:
             for log in self.iter_commits_from_last_updated(repo.url):
@@ -78,6 +83,18 @@ class SvnManager(BaseManager):
                     yield SvnCommit(log)
 
     def iter_commits_from_last_updated(self, url: str) -> Iterator[LogEntry]:
+        """ Get all commit log from last time you accessed.
+
+        Parameter
+        ---------
+        url: str
+            The repository url to get commit log.
+
+        Return
+        ------
+        SvnClient.iter_log(): Iterator[LogEntry]
+            Commit log from svn client
+        """
         client = SvnClient(url)
         args = {
             "timestamp_from_dt": self.settings.last_updated

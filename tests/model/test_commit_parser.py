@@ -10,12 +10,12 @@ from git_svn_monitor.util.log_entry import LogEntry
 
 @pytest.fixture
 def svn_commit() -> SvnCommit:
-    return SvnCommit(LogEntry(**{
-        "author": "author",
-        "date": datetime.now(),
-        "msg": "commit messsage",
-        "revision": "tA23qtUg"
-    }))
+    return SvnCommit(LogEntry(
+        author="author",
+        date=datetime.now(),
+        msg="commit messsage",
+        revision="tA23qtUg"
+    ))
 
 
 def test_perse_ticket_number(svn_commit: SvnCommit) -> None:
