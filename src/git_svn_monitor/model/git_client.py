@@ -1,9 +1,10 @@
 from typing import Any, Iterator
 
 import git
+from git.objects import Commit
 from git.util import IterableList
 
-from git_svn_monitor.core.config import GitCommit, PathLike
+from git_svn_monitor.core.config import PathLike
 
 
 class GitClient():
@@ -38,12 +39,17 @@ class GitClient():
         """
         return self.repo.remotes[remote].fetch(prune=True)
 
-    def iter_commits_(self, rev: Any, **kwargs: Any) -> Iterator[GitCommit]:
+    def iter_commits_(self, rev: Any, **kwargs: Any) -> Iterator[Commit]:
         """ Get all commits, merge commit is ignored by default.
+
+        Parameters
+        ----------
+        rev : Any
+            Revision info to get commits
         """
         kwargs.setdefault("no_merges", True)
         return self.repo.iter_commits(rev, **kwargs)
 
     @property
-    def remotes(self) -> IterableList[git.Remote]:
+    def remotes(self) -> IterableList[git.FetchInfo]:
         return self.repo.remotes

@@ -1,21 +1,28 @@
 from collections import defaultdict
+from datetime import datetime
+from typing import Dict, List
 
 from git_svn_monitor.core.config import env_config
-from git_svn_monitor.model.commit_parser import build_message_for_redmine, parse_ticket_number
-from git_svn_monitor.model.git_manager import GitManager
+from git_svn_monitor.core.settings import save_settings, Settings
 from git_svn_monitor.model.redmine_client import RedmineClient
+from git_svn_monitor.model.manager import BaseManager, GitManager, SvnManager
 
 
 def main() -> None:
-    git = GitManager()
-    commits = git.get_latest_commits()
+    targets: List[BaseManager] = [GitManager(), SvnManager()]
 
-    commits_for_ticket: dict[str, list[str]] = defaultdict(list)
-    for commit in commits:
-        id = parse_ticket_number(commit.message)
-        if id is None:
-            continue
-        commits_for_ticket[id].append(build_message_for_redmine(commit))
+    commits_for_ticket: Dict[int, List[str]] = defaultdict(list)
+    for mgr in targets:
+        for commit in mgr.iter_latest_commits():
+            id = commit.parse_ticket_number()
+            if id is None:
+                continue
+            message = commit.build_message_for_redmine()
+            commits_for_ticket[id].append(message)
+
+    if env_config.debug is False:
+        Settings.last_updated = datetime.now()
+    save_settings()
 
     redmine = RedmineClient()
 

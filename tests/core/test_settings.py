@@ -1,7 +1,7 @@
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any, Dict, Iterator
 
 import pytest
 
@@ -9,28 +9,35 @@ from git_svn_monitor.core import settings
 
 
 @pytest.fixture
-def sample_settings() -> dict[str, Any]:
+def sample_settings() -> Dict[str, Any]:
     return {
-        "repositories": [{
+        "git_repositories": [{
             "name": "name",
             "url": "http://example.git",
         }],
-        "email": "test@email.com",
+        "svn_repositories": [{
+            "name": "name",
+            "url": "http://example.git",
+        }],
+        "git_author": "git",
+        "svn_author": "svn",
         "last_updated": "2021-01-01T01:23:45"
     }
 
 
 @pytest.fixture
-def setting(sample_settings: dict[str, Any]) -> settings.Setting:
+def setting(sample_settings: Dict[str, Any]) -> settings.Setting:
     return settings.Setting(
-        repositories=[settings.Repository(**sample_settings["repositories"][0])],
-        email=sample_settings["email"],
+        git_repositories=[settings.Repository(**sample_settings["git_repositories"][0])],
+        svn_repositories=[settings.Repository(**sample_settings["svn_repositories"][0])],
+        git_author=sample_settings["git_author"],
+        svn_author=sample_settings["svn_author"],
         last_updated=sample_settings["last_updated"],
     )
 
 
 @pytest.fixture
-def settings_file(sample_settings: dict[str, Any]) -> Iterator[Path]:
+def settings_file(sample_settings: Dict[str, Any]) -> Iterator[Path]:
     settings_file = Path(__file__).resolve().parent / "settings.json"
     with open(settings_file, mode="w", encoding="utf-8") as f:
         json.dump(sample_settings, f)
@@ -46,7 +53,8 @@ def test_load_settings_into_instance(settings_file: Path) -> None:
     _settings = settings.load_settings(settings_file)
     assert isinstance(_settings, settings.Setting)
     assert isinstance(_settings.last_updated, datetime)
-    assert all([isinstance(repo, settings.Repository) for repo in _settings.repositories])
+    assert all([isinstance(repo, settings.Repository) for repo in _settings.git_repositories])
+    assert all([isinstance(repo, settings.Repository) for repo in _settings.svn_repositories])
 
 
 def test_loaded_settings_value(
@@ -54,10 +62,13 @@ def test_loaded_settings_value(
     settings_file: Path
 ) -> None:
     _settings = settings.load_settings(settings_file)
-    assert _settings.email == setting.email
+    assert _settings.git_author == setting.git_author
+    assert _settings.svn_author == setting.svn_author
     assert _settings.last_updated == setting.last_updated
-    assert _settings.repositories[0].name == setting.repositories[0].name
-    assert _settings.repositories[0].url == setting.repositories[0].url
+    assert _settings.git_repositories[0].name == setting.git_repositories[0].name
+    assert _settings.git_repositories[0].url == setting.git_repositories[0].url
+    assert _settings.svn_repositories[0].name == setting.svn_repositories[0].name
+    assert _settings.svn_repositories[0].url == setting.svn_repositories[0].url
 
 
 def test_load_not_exist_path() -> None:
@@ -67,9 +78,12 @@ def test_load_not_exist_path() -> None:
     _settings = settings.load_settings("nothing.json")
     assert isinstance(_settings, settings.Setting)
     # last_updated is not same value because defined by datetime.now()
-    assert _settings.email == default_settings.email
-    assert _settings.repositories[0].name == default_settings.repositories[0].name
-    assert _settings.repositories[0].url == default_settings.repositories[0].url
+    assert _settings.git_author == default_settings.git_author
+    assert _settings.svn_author == default_settings.svn_author
+
+    # Test only git_repositories because the default value is same both git and svn.
+    assert _settings.git_repositories[0].name == default_settings.git_repositories[0].name
+    assert _settings.git_repositories[0].url == default_settings.git_repositories[0].url
 
 
 def test_save_settings(setting: settings.Setting) -> None:
@@ -84,7 +98,7 @@ def test_save_settings(setting: settings.Setting) -> None:
 def test_overwrite_settings(settings_file: Path, setting: settings.Setting) -> None:
     """ Overwrite settings file if already exists.
     """
-    setting.email = "updated@email.com"
+    setting.git_author = "updated"
     settings.save_settings(settings_file, setting)
     updated = settings.load_settings(settings_file)
-    assert updated.email == setting.email
+    assert updated.git_author == setting.git_author
