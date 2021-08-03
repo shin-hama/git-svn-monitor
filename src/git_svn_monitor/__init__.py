@@ -1,4 +1,3 @@
-
 from git_svn_monitor.core.logger import setup_logger
 
 
