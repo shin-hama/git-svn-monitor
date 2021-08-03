@@ -3,7 +3,7 @@ from typing import Any, Iterator, List
 from git_svn_monitor.core.config import SETTING_FILE
 from git_svn_monitor.core.settings import load_settings
 from git_svn_monitor.model.svn_client import SvnClient
-from git_svn_monitor.model.svn_commit import SvnCommit
+from git_svn_monitor.model.commit_parser import SvnCommit
 
 
 class SvnManager:

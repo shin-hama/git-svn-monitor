@@ -2,7 +2,6 @@ from collections import defaultdict
 from typing import Dict, List
 
 from git_svn_monitor.core.config import env_config
-from git_svn_monitor.model.commit_parser import build_message_for_redmine, parse_ticket_number
 from git_svn_monitor.model.git_manager import GitManager
 from git_svn_monitor.model.redmine_client import RedmineClient
 
@@ -13,12 +12,10 @@ def main() -> None:
 
     commits_for_ticket: Dict[str, List[str]] = defaultdict(list)
     for commit in commits:
-        id = parse_ticket_number(commit.message)
+        id = commit.parse_ticket_number()
         if id is None:
             continue
-        message = build_message_for_redmine(
-            commit.summary, commit.author, commit.message, commit.timestamp
-        )
+        message = commit.build_message_for_redmine()
         commits_for_ticket[id].append(message)
 
     redmine = RedmineClient()

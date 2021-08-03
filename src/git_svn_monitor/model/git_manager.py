@@ -7,7 +7,7 @@ from git.util import IterableList
 from git_svn_monitor.core.config import SETTING_FILE, TARGET_DIR
 from git_svn_monitor.core.settings import load_settings, save_settings
 from git_svn_monitor.model.git_client import GitClient
-from git_svn_monitor.model.git_commit import GitCommit
+from git_svn_monitor.model.commit_parser import GitCommit
 
 
 class GitManager:
