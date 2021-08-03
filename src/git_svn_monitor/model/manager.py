@@ -5,15 +5,16 @@ from git.objects import Commit
 from git.util import IterableList
 
 from git_svn_monitor.core.config import GIT_LOCAL_REPOSITORY
-from git_svn_monitor.core.settings import load_settings
+from git_svn_monitor.core.settings import Settings
 from git_svn_monitor.model.git_client import GitClient
 from git_svn_monitor.model.svn_client import SvnClient
 from git_svn_monitor.model.commit_parser import BaseCommit, GitCommit, SvnCommit
+from git_svn_monitor.util.log_entry import LogEntry
 
 
 class BaseManager(object):
     def __init__(self) -> None:
-        self.settings = load_settings()
+        self.settings = Settings
 
     def iter_latest_commits(self) -> Iterator[BaseCommit]:
         raise NotImplementedError
@@ -76,7 +77,7 @@ class SvnManager(BaseManager):
                 if log.author == self.settings.svn_author:
                     yield SvnCommit(log)
 
-    def iter_commits_from_last_updated(self, url: str) -> Iterator[Any]:
+    def iter_commits_from_last_updated(self, url: str) -> Iterator[LogEntry]:
         client = SvnClient(url)
         args = {
             "timestamp_from_dt": self.settings.last_updated

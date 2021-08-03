@@ -5,6 +5,7 @@ from svn.remote import RemoteClient
 from svn.utility import get_client
 
 from git_svn_monitor.core.config import PathLike
+from git_svn_monitor.util.log_entry import LogEntry
 
 
 class SvnClient:
@@ -17,7 +18,7 @@ class SvnClient:
         elif isinstance(self.repo, RemoteClient) is False:
             raise Exception(f"{path} is not svn repository")
 
-    def iter_log(self, **kwargs: Any) -> Iterator[Any]:
+    def iter_log(self, **kwargs: Any) -> Iterator[LogEntry]:
         """ Get all commits log. You can get iterator of LogEntry instance. LogEntry has 'date',
         'msg', 'revision', 'author', 'changelist'.
 

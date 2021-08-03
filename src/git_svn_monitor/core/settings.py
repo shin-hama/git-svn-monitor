@@ -1,9 +1,9 @@
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List, Optional, Union
 
-from git_svn_monitor.core.config import env_config, PathLike, SETTING_FILE
+from git_svn_monitor.core.config import PathLike, SETTING_FILE
 
 
 class Repository:
@@ -26,9 +26,6 @@ class Setting:
             self.last_updated = datetime.now()
 
 
-_setting: Union[Setting, None] = None
-
-
 def load_settings(path: PathLike = SETTING_FILE) -> Setting:
     """ Load setting file and convert into Setting instance. Return default instacne when setting
     file is not existed.
@@ -39,9 +36,6 @@ def load_settings(path: PathLike = SETTING_FILE) -> Setting:
         else:
             # nested data
             return Repository(**data)
-    global _setting
-    if _setting is not None:
-        return _setting
 
     _path = Path(path)
     if _path.is_dir():
@@ -49,14 +43,14 @@ def load_settings(path: PathLike = SETTING_FILE) -> Setting:
 
     if _path.exists():
         with open(path, mode="r", encoding="utf-8") as f:
-            _setting = json.load(f, object_hook=_decode_settings)
+            setting = json.load(f, object_hook=_decode_settings)
     else:
-        _setting = Setting()
+        setting = Setting()
 
-    return _setting
+    return setting
 
 
-def save_settings() -> None:
+def save_settings(filepath: PathLike = SETTING_FILE, settings: Optional[Setting] = None) -> None:
     """ Save Setting instance to json to update last update. Overwrite file if already exists.
     """
     def encode_settings(o: Any) -> Union[Dict[str, Any], str]:
@@ -66,11 +60,11 @@ def save_settings() -> None:
             return o.__dict__
         return o
 
-    if _setting is None:
-        return None
+    if settings is None:
+        settings = Settings
 
-    if env_config.debug is False:
-        _setting.last_updated = datetime.now()
+    with open(filepath, mode="w", encoding="utf-8") as f:
+        json.dump(settings, f, default=encode_settings, indent=2)
 
-    with open(SETTING_FILE, mode="w", encoding="utf-8") as f:
-        json.dump(_setting, f, default=encode_settings, indent=2)
+
+Settings = load_settings()

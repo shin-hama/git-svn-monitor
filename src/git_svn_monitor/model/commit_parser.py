@@ -4,9 +4,11 @@ from typing import Any, Optional, Union
 
 from git.objects import Commit
 
+from git_svn_monitor.util.log_entry import LogEntry
 
-TICKET_PREFIX = "refs #"
-TICKET_PATTERN = re.compile(f"{TICKET_PREFIX}[0-9]*")
+
+ID_PREFIX = "refs #"
+TICKET_PATTERN = re.compile(f"{ID_PREFIX}[0-9]*")
 
 
 class BaseCommit(object):
@@ -18,7 +20,7 @@ class BaseCommit(object):
     def __init__(self, commit: Any):
         raise NotImplementedError
 
-    def parse_ticket_number(self) -> Optional[str]:
+    def parse_ticket_number(self) -> Optional[int]:
         """ Get ticket number written in commit message.
         We can find to match the pattern of `refs #****`.
 
@@ -32,8 +34,8 @@ class BaseCommit(object):
         if matched is None:
             return None
 
-        ticket_number = matched.group().replace(TICKET_PREFIX, "")
-        return ticket_number
+        ticket_number = matched.group().replace(ID_PREFIX, "")
+        return int(ticket_number)
 
     def build_message_for_redmine(self) -> str:
         """ Build message for upload redmine.
@@ -71,7 +73,7 @@ class GitCommit(BaseCommit):
 
 
 class SvnCommit(BaseCommit):
-    def __init__(self, commit: Any) -> None:
+    def __init__(self, commit: LogEntry) -> None:
         self.author = commit.author
         self.timestamp = commit.date
         self.message = commit.msg
