@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime
+import logging
 from typing import Dict, List
 
 from git_svn_monitor.core.config import env_config
@@ -8,9 +9,11 @@ from git_svn_monitor.model.redmine_client import RedmineClient
 from git_svn_monitor.model.manager import BaseManager, GitManager, SvnManager
 
 
+logger = logging.getLogger(__name__)
+
+
 def main() -> None:
     targets: List[BaseManager] = [GitManager(), SvnManager()]
-
     commits_for_ticket: Dict[int, List[str]] = defaultdict(list)
     for mgr in targets:
         for commit in mgr.iter_latest_commits():

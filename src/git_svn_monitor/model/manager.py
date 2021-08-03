@@ -1,3 +1,4 @@
+from logging import getLogger
 from typing import Any, Iterator
 
 import git
@@ -10,6 +11,9 @@ from git_svn_monitor.model.git_client import GitClient
 from git_svn_monitor.model.svn_client import SvnClient
 from git_svn_monitor.model.commit_parser import BaseCommit, GitCommit, SvnCommit
 from git_svn_monitor.util.log_entry import LogEntry
+
+
+logger = getLogger(__name__)
 
 
 class BaseManager(object):
