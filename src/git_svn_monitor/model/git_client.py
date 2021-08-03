@@ -4,7 +4,7 @@ import git
 from git.objects import Commit
 from git.util import IterableList
 
-from git_svn_monitor.core.config import GitCommit, PathLike
+from git_svn_monitor.core.config import PathLike
 
 
 class GitClient():

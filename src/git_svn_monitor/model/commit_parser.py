@@ -2,8 +2,6 @@ from datetime import datetime
 import re
 from typing import Optional, Union
 
-from git_svn_monitor.core.config import DateLike, GitCommit
-
 
 TICKET_PREFIX = "refs #"
 TICKET_PATTERN = re.compile(f"{TICKET_PREFIX}[0-9]*")

@@ -1,5 +1,7 @@
 from git.objects import Commit
 
+from git_svn_monitor.model.commit_parser import build_message_for_redmine, parse_ticket_number
+
 
 class GitCommit(object):
     def __init__(self, commit: Commit) -> None:
