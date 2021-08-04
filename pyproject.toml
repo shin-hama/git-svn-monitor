@@ -3,6 +3,9 @@ name = "git_svn_monitor"
 version = "0.1.0"
 description = ""
 authors = ["shamada <shamada@jeol.co.jp>"]
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/shin-hama/git-svn-monitor"
 
 [tool.poetry.dependencies]
 python = "^3.8"
