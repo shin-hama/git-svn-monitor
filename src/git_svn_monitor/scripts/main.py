@@ -25,7 +25,7 @@ def main() -> None:
     updated_issues = update_redmine(commits)
 
     # Send updated info when setting slack webhook.
-    if env_config.slack_webhook_url:
+    if env_config.slack_webhook_url and len(updated_issues) > 0:
         message = build_message(updated_issues)
         send_to_slack(message)
 
