@@ -17,6 +17,9 @@ class EnvConfig(BaseSettings):
     redmine_url: str
     redmine_api_key: str
 
+    slack_webhook_url: Optional[str]
+    proxy: Optional[str]
+
     class Config:
         env_file = DOTENV_FILE
         env_file_encoding = "utf-8"

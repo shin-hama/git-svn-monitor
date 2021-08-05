@@ -34,8 +34,10 @@ class RedmineClient:
         issue: redminelib.resources.Issue
             The updated issue
         """
-        logger.debug(f"Update: #{ticket_id}, kwargs: {kwargs}")
-        self.redmine.issue.update(ticket_id, **kwargs)
+        if env_config.debug:
+            logger.debug(f"Update: #{ticket_id}, kwargs: {kwargs}")
+        else:
+            self.redmine.issue.update(ticket_id, **kwargs)
 
         return self.redmine.issue.get(ticket_id)
 
