@@ -18,6 +18,7 @@ class EnvConfig(BaseSettings):
     redmine_api_key: str
 
     slack_webhook_url: Optional[str]
+    spread_sheet_key: Optional[str]
     proxy: Optional[str]
 
     class Config:
@@ -29,7 +30,8 @@ DateLike = Optional[Union[date, str]]
 PathLike = Union[str, 'os.PathLike[str]']
 
 TARGET_DIR = Path.home() / ".progress_monitor"
-SETTING_FILE = Path(TARGET_DIR) / "settings.json"
+SETTING_FILE = TARGET_DIR / "settings.json"
+GOOGLE_API_CREDENTIALS_FILE = TARGET_DIR / "google_api_credentials.json"
 GIT_LOCAL_REPOSITORY = TARGET_DIR / "monitor.git"
 
 # Logging in target directory
