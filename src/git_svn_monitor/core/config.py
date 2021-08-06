@@ -38,6 +38,8 @@ GIT_LOCAL_REPOSITORY = TARGET_DIR / "monitor.git"
 # Logging in target directory
 LOG_FILE = TARGET_DIR / "log" / "script.log"
 
+TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 try:
     env_config = EnvConfig()
 except ValidationError:

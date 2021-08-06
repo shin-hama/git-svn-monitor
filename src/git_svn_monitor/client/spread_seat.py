@@ -4,7 +4,9 @@ from typing import Any, Callable, List
 
 import gspread
 
-from git_svn_monitor.core.config import env_config, GOOGLE_API_CREDENTIALS_FILE, PathLike
+from git_svn_monitor.core.config import (
+    env_config, GOOGLE_API_CREDENTIALS_FILE, PathLike, TIMESTAMP_FORMAT
+)
 from git_svn_monitor.model.commit_parser import BaseCommit
 
 
@@ -44,18 +46,18 @@ def upload_commit(commit: BaseCommit) -> None:
     # Get header row
     cols = ws.row_values(1)
 
-    vals = [_convert_str(getattr(commit, col)) for col in cols]
+    vals = [_convert_to_str(getattr(commit, col)) for col in cols]
     ws.append_row(vals, value_input_option="USER_ENTERED")
 
     os.environ.update({"http_proxy": ""})
     os.environ.update({"https_proxy": ""})
 
 
-def _convert_str(val: Any) -> str:
+def _convert_to_str(val: Any) -> str:
     """ Convert any types of value to string, supported type is defined in `funcs`
     """
     funcs: List[Callable[[Any], str]] = [
-        lambda x: x.strftime(format="%Y-%m-%d %H:%M:%S"),  # datetime
+        lambda x: x.strftime(format=TIMESTAMP_FORMAT),  # datetime
         str
     ]
 
