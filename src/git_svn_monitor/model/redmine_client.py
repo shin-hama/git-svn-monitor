@@ -62,12 +62,21 @@ class RedmineClient:
         """
         logger.info("Get issues")
         filter = kwargs
-        if start is not None:
-            if end is None:
-                end = datetime.today().date()
-            filter["updated_on"] = f"><{start}|{end}"
+
+        updated_on = self._build_timestamp_condition(start, end)
+        if updated_on:
+            filter["updated_on"] = updated_on
 
         u = self.redmine.user.get("current")
         logger.debug(f"user_id: {u.id}, fileter: {filter}")
         for issue in self.redmine.issue.filter(assigned_to_id=u.id, **filter):
             yield issue
+
+    def _build_timestamp_condition(self, start: DateLike = None, end: DateLike = None) -> str:
+        condition = ""
+        if start is not None:
+            if end is None:
+                end = datetime.today().date()
+            condition = f"><{start}|{end}"
+
+        return condition
