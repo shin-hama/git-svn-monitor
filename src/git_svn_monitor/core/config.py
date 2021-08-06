@@ -19,6 +19,7 @@ class EnvConfig(BaseSettings):
 
     slack_webhook_url: Optional[str]
     spread_sheet_key: Optional[str]
+    debug_spread_sheet_key: Optional[str]
     proxy: Optional[str]
 
     class Config:

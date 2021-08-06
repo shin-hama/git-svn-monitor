@@ -18,12 +18,14 @@ class BaseCommit(object):
     author: Union[str, None]
     timestamp: datetime
     message: str
+    repository: str
     summary: str
+    ticket_id: Optional[int]
 
-    def __init__(self, commit: Any):
+    def __init__(self, **kwargs: Any) -> None:
         raise NotImplementedError
 
-    def parse_ticket_number(self) -> Optional[int]:
+    def _parse_ticket_number(self) -> Optional[int]:
         """ Get ticket number written in commit message.
         We can find to match the pattern of `refs #****`.
 
@@ -64,9 +66,10 @@ class BaseCommit(object):
 
 
 class GitCommit(BaseCommit):
-    def __init__(self, commit: Commit) -> None:
+    def __init__(self, commit: Commit, repo_name: str) -> None:
         self.author = commit.author.name
         self.timestamp = commit.authored_datetime
+        self.repository = repo_name
 
         # convert to string if the type of member is bytes.
         if isinstance(commit.message, bytes):
@@ -79,11 +82,16 @@ class GitCommit(BaseCommit):
         else:
             self.summary = commit.summary
 
+        self.ticket_id = self._parse_ticket_number()
+
 
 class SvnCommit(BaseCommit):
-    def __init__(self, commit: LogEntry) -> None:
+    def __init__(self, commit: LogEntry, repo_name: str) -> None:
         self.author = commit.author
         self.timestamp = commit.date
         self.message = commit.msg
         # The default summary is first line of the message.
         self.summary = self.message.split("\n", 1)[0]
+        self.ticket_id = self._parse_ticket_number()
+
+        self.repository = repo_name
