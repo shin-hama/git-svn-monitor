@@ -1,6 +1,6 @@
 from datetime import datetime
 from logging import getLogger
-from typing import Any, Iterator, Union
+from typing import Any, Iterator, Optional, Union
 
 from redminelib import Redmine, resources
 
@@ -58,12 +58,14 @@ class RedmineClient:
 
         Return
         ------
-        issues:
+        issues:  Iterator of redminelib.resources.Issue
+            The iterator of issues between start and end.
         """
         logger.info("Get issues")
         filter = kwargs
 
-        updated_on = self._build_timestamp_condition(start, end)
+        updated_on = self._build_date_range(start, end)
+        # updated_on will be not set when timestamp condition is empty
         if updated_on:
             filter["updated_on"] = updated_on
 
@@ -72,8 +74,8 @@ class RedmineClient:
         for issue in self.redmine.issue.filter(assigned_to_id=u.id, **filter):
             yield issue
 
-    def _build_timestamp_condition(self, start: DateLike = None, end: DateLike = None) -> str:
-        condition = ""
+    def _build_date_range(self, start: DateLike = None, end: DateLike = None) -> Optional[str]:
+        condition = None
         if start is not None:
             if end is None:
                 end = datetime.today().date()

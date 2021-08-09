@@ -23,6 +23,11 @@ autopep8 = "^1.5.7"
 flake8 = "^3.9.2"
 mypy = "^0.910"
 
+[tool.pytest.ini_options]
+markers = [
+    "internal: marks tests as internal connection"
+]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

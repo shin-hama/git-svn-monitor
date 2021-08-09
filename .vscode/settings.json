@@ -1,6 +1,4 @@
 {
-    "terminal.integrated.defaultProfile.windows": "PowerShell",
-    "cSpell.words": [
-        "gspread"
-    ]
+  "terminal.integrated.defaultProfile.windows": "PowerShell",
+  "cSpell.words": ["REDMINE", "gspread"]
 }
