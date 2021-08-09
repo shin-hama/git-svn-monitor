@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Iterator
 import pytest
 
 from git_svn_monitor.core.config import env_config
@@ -6,7 +7,7 @@ from git_svn_monitor.model.redmine_client import RedmineClient
 
 
 @pytest.fixture(scope="session")
-def client() -> RedmineClient:
+def client() -> Iterator[RedmineClient]:
     yield RedmineClient()
 
 
