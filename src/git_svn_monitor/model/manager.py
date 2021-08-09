@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Iterator
+from typing import Any, Iterator, Tuple
 
 import git
 from git.objects import Commit
@@ -37,9 +37,9 @@ class GitManager(BaseManager):
         commits: List of commit
             All commit information you can get.
         """
-        for fetched in self.fetch_all_remote():
+        for fetched, repo_name in self.fetch_all_remote():
             for commit in self.iter_commits_from_last_updated(fetched):
-                yield GitCommit(commit)
+                yield GitCommit(commit, repo_name)
 
     def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[Commit]:
         """ Get all the latest commits since the last update according to the configuration file.
@@ -56,7 +56,7 @@ class GitManager(BaseManager):
         logger.info(f"Git log condition: {args}")
         return self.git.iter_commits_(remotes, **args)
 
-    def fetch_all_remote(self) -> Iterator[IterableList[git.FetchInfo]]:
+    def fetch_all_remote(self) -> Iterator[Tuple[IterableList[git.FetchInfo], str]]:
         """ Fetch the latest changes for all remotes specified in settings file.
         """
         for repo in self.settings.git_repositories:
@@ -67,7 +67,7 @@ class GitManager(BaseManager):
             if all([repo.name != remote.name for remote in self.git.remotes]):
                 self.git.add_remote(repo.name, repo.url.replace("\\", "/"))
 
-            yield self.git.fetch_remote(repo.name)
+            yield self.git.fetch_remote(repo.name), repo.name
 
 
 class SvnManager(BaseManager):
@@ -87,7 +87,7 @@ class SvnManager(BaseManager):
             logger.info(f"Fetch to: {repo}")
             for log in self.iter_commits_from_last_updated(repo.url):
                 if log.author == self.settings.svn_author:
-                    yield SvnCommit(log)
+                    yield SvnCommit(log, repo.name)
 
     def iter_commits_from_last_updated(self, url: str) -> Iterator[LogEntry]:
         """ Get all commit log from last time you accessed.

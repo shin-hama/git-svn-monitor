@@ -17,7 +17,7 @@ def setup_logger(name: str) -> None:
     if env_config.debug:
         logger.setLevel(logging.DEBUG)
     else:
-        logger.setLevel(logging.WARNING)
+        logger.setLevel(logging.INFO)
 
     # set limits to 1MB
     max_bytes = 1024*1024

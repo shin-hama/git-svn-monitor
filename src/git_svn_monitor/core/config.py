@@ -17,6 +17,11 @@ class EnvConfig(BaseSettings):
     redmine_url: str
     redmine_api_key: str
 
+    slack_webhook_url: Optional[str]
+    spread_sheet_key: Optional[str]
+    debug_spread_sheet_key: Optional[str]
+    proxy: Optional[str]
+
     class Config:
         env_file = DOTENV_FILE
         env_file_encoding = "utf-8"
@@ -26,11 +31,14 @@ DateLike = Optional[Union[date, str]]
 PathLike = Union[str, 'os.PathLike[str]']
 
 TARGET_DIR = Path.home() / ".progress_monitor"
-SETTING_FILE = Path(TARGET_DIR) / "settings.json"
+SETTING_FILE = TARGET_DIR / "settings.json"
+GOOGLE_API_CREDENTIALS_FILE = TARGET_DIR / "google_api_credentials.json"
 GIT_LOCAL_REPOSITORY = TARGET_DIR / "monitor.git"
 
 # Logging in target directory
 LOG_FILE = TARGET_DIR / "log" / "script.log"
+
+TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 try:
     env_config = EnvConfig()
