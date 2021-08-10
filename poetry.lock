@@ -139,7 +139,7 @@ tool = ["click (>=6.0.0)"]
 
 [[package]]
 name = "gspread"
-version = "4.0.0"
+version = "4.0.1"
 description = "Google Spreadsheets Python API"
 category = "main"
 optional = false
@@ -477,7 +477,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "bac571957b4298749c165bae23687923cad73076bbed5607c7de024cd165fece"
+content-hash = "8fd1b1076d314864c9559d1fc0a8d0828d2a49c09a0e001d5ad15a162266f85e"
 
 [metadata.files]
 atomicwrites = [
@@ -529,8 +529,8 @@ google-auth-oauthlib = [
     {file = "google_auth_oauthlib-0.4.5-py2.py3-none-any.whl", hash = "sha256:b5a1ce7c617d247ccb2dfbba9d4bfc734b41096803d854a2c52592ae80150a67"},
 ]
 gspread = [
-    {file = "gspread-4.0.0-py3-none-any.whl", hash = "sha256:8409f93f40eb6dd9a5fed50eba90a9f90027ce9c7882b14424e70fd9bd1a4b7e"},
-    {file = "gspread-4.0.0.tar.gz", hash = "sha256:b557a4aea9d6aa74cd411123df2f35dcde43c1faf085333efb0ede7c9f8c545d"},
+    {file = "gspread-4.0.1-py3-none-any.whl", hash = "sha256:4933c3e2359e82698c0990f3b0e312627fcbf8fecc8bc81d26713f5860e20b48"},
+    {file = "gspread-4.0.1.tar.gz", hash = "sha256:236a0f24e3724b49bae4cbd5144ed036b0ae6feaf5828ad033eb2824bf05e5be"},
 ]
 idna = [
     {file = "idna-3.2-py3-none-any.whl", hash = "sha256:14475042e284991034cb48e06f6851428fb14c4dc953acd9be9a5e95c7b6dd7a"},
