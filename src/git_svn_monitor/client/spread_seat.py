@@ -1,6 +1,6 @@
 from logging import getLogger
 import os
-from typing import Any, Callable, List
+from typing import Any, Callable, List, Optional
 
 import gspread
 
@@ -21,7 +21,7 @@ def open_spread_sheet(json_file: PathLike, sheet_key: str) -> gspread.Worksheet:
     return worksheet
 
 
-def upload_commit(commit: BaseCommit) -> None:
+def upload_commit(commit: BaseCommit) -> Optional[str]:
     """ Upload commit parameter to spread sheet.
     """
     # Set up a proxy to connect spread sheet api temporarily.
@@ -36,12 +36,13 @@ def upload_commit(commit: BaseCommit) -> None:
             sheet_key = env_config.spread_sheet_key
         if sheet_key is None:
             logger.warning("No SPREAD_SHEET_KEY, please set up.")
-            return
+            return None
+
         ws = open_spread_sheet(GOOGLE_API_CREDENTIALS_FILE, sheet_key)
     except Exception as e:
         logger.warning("Fail to connect spread sheet")
         logger.warning(e.args)
-        return
+        return None
 
     # Get header row
     cols = ws.row_values(1)
@@ -51,6 +52,8 @@ def upload_commit(commit: BaseCommit) -> None:
 
     os.environ.update({"http_proxy": ""})
     os.environ.update({"https_proxy": ""})
+
+    return ws.url
 
 
 def _convert_to_str(val: Any) -> str:

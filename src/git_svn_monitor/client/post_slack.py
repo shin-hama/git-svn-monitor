@@ -16,7 +16,10 @@ def send_to_slack(text: str) -> None:
         proxy=env_config.proxy
     )
 
-    res = client.send(text=text)
+    head = "*Automatic posting from git_svn_progress_monitor*"
+    _text = f"{head}\n\n{text}"
+
+    res = client.send(text=_text)
     if (200 <= res.status_code < 300) is False:
         logger.error("Fail to post slack")
         logger.error(res.body)
