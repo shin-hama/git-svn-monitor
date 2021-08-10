@@ -26,15 +26,20 @@ def main() -> None:
 
     updated_issues = update_issues(commits)
 
-    # Send updated info when setting up a slack webhook.
-    if env_config.slack_webhook_url and len(updated_issues) > 0:
-        message = build_notification_message(updated_issues)
-        send_to_slack(message)
-
     # Upload to spread sheet
     if env_config.spread_sheet_key:
         for commit in commits:
-            upload_commit(commit)
+            ws_url = upload_commit(commit)
+
+    # Send updated info when setting up a slack webhook.
+    if env_config.slack_webhook_url:
+        if len(commits) > 0:
+            sheet_result = f"Spread sheet is updated: {ws_url}"
+            redmine_result = parse_redmine_result(updated_issues)
+            message = f"{sheet_result}\n\n{redmine_result}"
+        else:
+            message = "There are no commits from last time"
+        send_to_slack(message)
 
 
 def get_latest_commits() -> List[BaseCommit]:
@@ -89,9 +94,11 @@ def classify_commits_by_ticket(commits: List[BaseCommit]) -> Dict[int, List[str]
     return commits_per_ticket
 
 
-def build_notification_message(issues: List[Issue]) -> str:
+def parse_redmine_result(issues: List[Issue]) -> str:
     """ Build message to notify result of execution.
     """
+    if issues == []:
+        return ""
     tickets = [i.url for i in issues]
 
     head = "Progress on the following Issue has been described.\n"
