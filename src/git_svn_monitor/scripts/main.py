@@ -12,7 +12,7 @@ from git_svn_monitor.core.settings import save_settings, Settings
 from git_svn_monitor.model.commit_parser import BaseCommit
 from git_svn_monitor.model.redmine_client import RedmineClient
 from git_svn_monitor.model.manager import BaseManager, GitManager, SvnManager
-
+from git_svn_monitor.util import utility
 
 logger = getLogger(__name__)
 
@@ -24,7 +24,10 @@ def main() -> None:
         Settings.last_updated = datetime.now()
     save_settings()
 
-    updated_issues = update_issues(commits)
+    # Redmine is internal server, that means no need to use proxy
+    utility.remove_proxy()
+    updated_issues = update_redmine_issues(commits)
+    utility.setup_proxy()
 
     # Upload to spread sheet
     if env_config.spread_sheet_key:
@@ -56,7 +59,7 @@ def get_latest_commits() -> List[BaseCommit]:
     return commits
 
 
-def update_issues(commits: List[BaseCommit]) -> List[Issue]:
+def update_redmine_issues(commits: List[BaseCommit]) -> List[Issue]:
     """ Update issues is added commits
     """
     redmine = RedmineClient()

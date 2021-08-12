@@ -1,7 +1,6 @@
-import os
 from datetime import datetime
 from logging import getLogger
-from typing import Any, Callable, Dict, Iterator, Optional, Tuple, TypeVar, Union
+from typing import Any, Iterator, Optional, Union
 
 from redminelib import Redmine, resources
 
@@ -9,7 +8,6 @@ from git_svn_monitor.core.config import env_config, DateLike
 
 
 logger = getLogger(__name__)
-T = TypeVar("T")
 
 
 class RedmineClient:
@@ -36,16 +34,12 @@ class RedmineClient:
         issue: redminelib.resources.Issue
             The updated issue
         """
-        self.remove_proxy()
-
         if env_config.debug:
             logger.debug(f"Update: #{ticket_id}, kwargs: {kwargs}")
         else:
             self.redmine.issue.update(ticket_id, **kwargs)
 
         issue = self.redmine.issue.get(ticket_id)
-
-        self.setup_proxy()
 
         return issue
 
@@ -69,7 +63,6 @@ class RedmineClient:
         issues:  Iterator of redminelib.resources.Issue
             The iterator of issues between start and end.
         """
-        self.remove_proxy()
         logger.info("Get issues")
         filter = kwargs
 
@@ -84,17 +77,6 @@ class RedmineClient:
         iterator = self.redmine.issue.filter(assigned_to_id=u.id, **filter)
         for issue in iterator:
             yield issue
-
-        self.setup_proxy()
-
-    def remove_proxy(self) -> None:
-        os.environ.update({"http_proxy": ""})
-        os.environ.update({"https_proxy": ""})
-
-    def setup_proxy(self) -> None:
-        if env_config.proxy is not None:
-            os.environ.update({"http_proxy": env_config.proxy})
-            os.environ.update({"https_proxy": env_config.proxy})
 
     def _build_date_range(self, start: DateLike = None, end: DateLike = None) -> Optional[str]:
         condition = None
