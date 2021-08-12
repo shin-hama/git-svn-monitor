@@ -14,3 +14,5 @@ services:
     env_file:
       - .env
     tty: true
+    volumes:
+      - ~/.progress_monitor:/root/.progress_monitor
