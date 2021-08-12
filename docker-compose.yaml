@@ -1,0 +1,16 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - http_proxy=$PROXY
+    restart: on-failure
+    container_name: 'progress_monitor'
+    ports:
+      - '9011:9011'
+    env_file:
+      - .env
+    tty: true
