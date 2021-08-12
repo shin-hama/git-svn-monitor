@@ -45,7 +45,7 @@ class Setting:
         )
 
 
-def load_settings(path: PathLike = SETTING_FILE) -> Setting:
+def load_settings(path: PathLike = SETTING_FILE) -> Optional[Setting]:
     """ Load setting file and convert into Setting instance. Return default instacne when setting
     file is not existed.
     """
@@ -66,9 +66,9 @@ def load_settings(path: PathLike = SETTING_FILE) -> Setting:
         with open(path, mode="r", encoding="utf-8") as f:
             setting = json.load(f, object_hook=_decode_settings)
     else:
-        logger.warning("Use default setting since file doesn't exist.")
-        setting = Setting()
-
+        msg = f"The setting file doesn't exist on {_path}, please setup monitoring setting."
+        logger.error(msg)
+        raise Exception(msg)
     logger.debug(f"Current setting: {setting}")
 
     return setting

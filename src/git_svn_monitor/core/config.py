@@ -14,8 +14,11 @@ DOTENV_FILE = ".env"
 
 class EnvConfig(BaseSettings):
     debug: Optional[bool]
+
     redmine_url: str
     redmine_api_key: str
+    svn_username: str
+    svn_password: str
 
     slack_webhook_url: Optional[str]
     spread_sheet_key: Optional[str]
