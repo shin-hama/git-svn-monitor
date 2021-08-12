@@ -1,7 +1,7 @@
 from datetime import datetime
 from logging import getLogger
 import re
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from git.objects import Commit
 
@@ -15,8 +15,8 @@ TICKET_PATTERN = re.compile(f"{ID_PREFIX}[0-9]*")
 
 
 class BaseCommit(object):
-    author: Union[str, None]
-    timestamp: datetime
+    author: Optional[str]
+    timestamp: Optional[datetime]
     message: str
     repository: str
     summary: str
@@ -54,7 +54,8 @@ class BaseCommit(object):
         _title = f"{self.summary}: {self.author}".strip()
 
         # Set timestamp message for it is committed
-        _timestamp = f"Datetime: {self.timestamp.isoformat()}"
+        date = self.timestamp.isoformat() if self.timestamp is not None else None
+        _timestamp = f"Datetime: {date}"
 
         # Main containts is able to show when open the collapsed message.
         _containts = f"{_timestamp}\n\n{self.message}"
@@ -89,7 +90,7 @@ class SvnCommit(BaseCommit):
     def __init__(self, commit: LogEntry, repo_name: str) -> None:
         self.author = commit.author
         self.timestamp = commit.date
-        self.message = commit.msg
+        self.message = commit.msg or ""
         # The default summary is first line of the message.
         self.summary = self.message.split("\n", 1)[0]
         self.ticket_id = self._parse_ticket_number()

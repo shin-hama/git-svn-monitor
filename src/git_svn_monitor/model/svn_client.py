@@ -17,8 +17,6 @@ class SvnClient:
         """ Initialize client. Raise Exception when input path that is not svn repository.
         """
         logger.info(f"SVN Client: {path}")
-        logger.info(env_config.svn_password)
-        logger.info(env_config.svn_username)
         self.repo = get_client(
             path,
             username=env_config.svn_username,

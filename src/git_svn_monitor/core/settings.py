@@ -45,7 +45,7 @@ class Setting:
         )
 
 
-def load_settings(path: PathLike = SETTING_FILE) -> Optional[Setting]:
+def load_settings(path: PathLike = SETTING_FILE) -> Setting:
     """ Load setting file and convert into Setting instance. Return default instacne when setting
     file is not existed.
     """
