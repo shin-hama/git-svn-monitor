@@ -12,6 +12,7 @@ RUN poetry export -f requirements.txt > requirements.txt & \
 FROM python:3.8-slim as dev
 
 ENV PYTHONUNBUFFERED=1
+ENV LANG=en_US.UTF-8
 
 WORKDIR /usr/src/app
 
@@ -22,5 +23,3 @@ COPY --from=builder /usr/src/app/requirements.txt /usr/src/app/dist/*.whl ./
 
 RUN pip install -r requirements.txt && \
     pip install git_svn_monitor-0.1.0-py3-none-any.whl
-
-COPY .env .
