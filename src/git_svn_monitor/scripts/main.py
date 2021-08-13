@@ -8,23 +8,27 @@ from redminelib.resources import Issue
 from git_svn_monitor.client.post_slack import send_to_slack
 from git_svn_monitor.client.spread_seat import upload_commit
 from git_svn_monitor.core.config import env_config
-from git_svn_monitor.core.settings import save_settings, Settings
+from git_svn_monitor.core.settings import Setting, load_settings, save_settings
 from git_svn_monitor.model.commit_parser import BaseCommit
-from git_svn_monitor.model.redmine_client import RedmineClient
 from git_svn_monitor.model.manager import BaseManager, GitManager, SvnManager
-
+from git_svn_monitor.model.redmine_client import RedmineClient
+from git_svn_monitor.util import utility
 
 logger = getLogger(__name__)
 
 
 def main() -> None:
-    commits = get_latest_commits()
+    settings = load_settings()
+    commits = get_latest_commits(settings)
 
     if env_config.debug is False:
-        Settings.last_updated = datetime.now()
-    save_settings()
+        settings.last_updated = datetime.now()
+    save_settings(settings)
 
-    updated_issues = update_issues(commits)
+    # Redmine is internal server, that means no need to use proxy
+    utility.remove_proxy()
+    updated_issues = update_redmine_issues(commits)
+    utility.setup_proxy()
 
     # Upload to spread sheet
     if env_config.spread_sheet_key:
@@ -42,10 +46,10 @@ def main() -> None:
         send_to_slack(message)
 
 
-def get_latest_commits() -> List[BaseCommit]:
+def get_latest_commits(settings: Setting) -> List[BaseCommit]:
     """ Get all commits log from last executed time
     """
-    targets: List[BaseManager] = [GitManager(), SvnManager()]
+    targets: List[BaseManager] = [GitManager(settings), SvnManager(settings)]
     commits = []
     for mgr in targets:
         logger.info(f"Start parsing to {type(mgr)}")
@@ -56,7 +60,7 @@ def get_latest_commits() -> List[BaseCommit]:
     return commits
 
 
-def update_issues(commits: List[BaseCommit]) -> List[Issue]:
+def update_redmine_issues(commits: List[BaseCommit]) -> List[Issue]:
     """ Update issues is added commits
     """
     redmine = RedmineClient()

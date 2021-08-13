@@ -74,23 +74,15 @@ def test_loaded_settings_value(
 def test_load_not_exist_path() -> None:
     """ Load default values when doesn't exist setting file.
     """
-    default_settings = settings.Setting()
-    _settings = settings.load_settings("nothing.json")
-    assert isinstance(_settings, settings.Setting)
-    # last_updated is not same value because defined by datetime.now()
-    assert _settings.git_author == default_settings.git_author
-    assert _settings.svn_author == default_settings.svn_author
-
-    # Test only git_repositories because the default value is same both git and svn.
-    assert _settings.git_repositories[0].name == default_settings.git_repositories[0].name
-    assert _settings.git_repositories[0].url == default_settings.git_repositories[0].url
+    with pytest.raises(Exception):
+        settings.load_settings("nothing.json")
 
 
 def test_save_settings(setting: settings.Setting) -> None:
     """ Test to be able to create setting file from Setting instance.
     """
     filepath = Path(__file__).resolve().parent / "settings.json"
-    settings.save_settings(filepath, setting)
+    settings.save_settings(setting, filepath)
     assert filepath.exists()
     filepath.unlink()
 
@@ -99,6 +91,6 @@ def test_overwrite_settings(settings_file: Path, setting: settings.Setting) -> N
     """ Overwrite settings file if already exists.
     """
     setting.git_author = "updated"
-    settings.save_settings(settings_file, setting)
+    settings.save_settings(setting, settings_file)
     updated = settings.load_settings(settings_file)
     assert updated.git_author == setting.git_author

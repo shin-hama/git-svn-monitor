@@ -39,7 +39,9 @@ class RedmineClient:
         else:
             self.redmine.issue.update(ticket_id, **kwargs)
 
-        return self.redmine.issue.get(ticket_id)
+        issue = self.redmine.issue.get(ticket_id)
+
+        return issue
 
     def iter_issues_filtered_by_updated_date(
         self,
@@ -71,7 +73,9 @@ class RedmineClient:
 
         u = self.redmine.user.get("current")
         logger.debug(f"user_id: {u.id}, fileter: {filter}")
-        for issue in self.redmine.issue.filter(assigned_to_id=u.id, **filter):
+
+        iterator = self.redmine.issue.filter(assigned_to_id=u.id, **filter)
+        for issue in iterator:
             yield issue
 
     def _build_date_range(self, start: DateLike = None, end: DateLike = None) -> Optional[str]:

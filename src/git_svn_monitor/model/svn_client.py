@@ -5,7 +5,7 @@ from svn.local import LocalClient
 from svn.remote import RemoteClient
 from svn.utility import get_client
 
-from git_svn_monitor.core.config import PathLike
+from git_svn_monitor.core.config import env_config, PathLike
 from git_svn_monitor.util.log_entry import LogEntry
 
 
@@ -17,7 +17,11 @@ class SvnClient:
         """ Initialize client. Raise Exception when input path that is not svn repository.
         """
         logger.info(f"SVN Client: {path}")
-        self.repo = get_client(path)
+        self.repo = get_client(
+            path,
+            username=env_config.svn_username,
+            password=env_config.svn_password
+        )
         if isinstance(self.repo, LocalClient):
             self.repo.update()
         elif isinstance(self.repo, RemoteClient) is False:

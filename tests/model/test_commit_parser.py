@@ -15,7 +15,7 @@ def svn_commit() -> SvnCommit:
             author="author",
             date=datetime.now(),
             msg="commit messsage",
-            revision="tA23qtUg",
+            revision=10,
         ),
         repo_name="repo"
     )

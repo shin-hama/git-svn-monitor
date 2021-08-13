@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - http_proxy=$PROXY
+        - WORKDIR=/usr/src/app
+    restart: on-failure
+    container_name: 'progress_monitor'
+    ports:
+      - '9011:9011'
+    env_file:
+      - .env
+    tty: true
+    volumes:
+      - ~/.progress_monitor:/root/.progress_monitor
+      - ~/.git-credentials:/root/.git-credentials

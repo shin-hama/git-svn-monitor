@@ -6,7 +6,7 @@ from git.objects import Commit
 from git.util import IterableList
 
 from git_svn_monitor.core.config import GIT_LOCAL_REPOSITORY
-from git_svn_monitor.core.settings import Settings
+from git_svn_monitor.core.settings import Setting
 from git_svn_monitor.model.git_client import GitClient
 from git_svn_monitor.model.svn_client import SvnClient
 from git_svn_monitor.model.commit_parser import BaseCommit, GitCommit, SvnCommit
@@ -17,16 +17,16 @@ logger = getLogger(__name__)
 
 
 class BaseManager(object):
-    def __init__(self) -> None:
-        self.settings = Settings
+    def __init__(self, settings: Setting) -> None:
+        self.settings = settings
 
     def iter_latest_commits(self) -> Iterator[BaseCommit]:
         raise NotImplementedError
 
 
 class GitManager(BaseManager):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, settings: Setting) -> None:
+        super().__init__(settings)
         self.git = GitClient(GIT_LOCAL_REPOSITORY)
 
     def iter_latest_commits(self) -> Iterator[GitCommit]:
@@ -71,8 +71,8 @@ class GitManager(BaseManager):
 
 
 class SvnManager(BaseManager):
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, settings: Setting) -> None:
+        super().__init__(settings)
 
     def iter_latest_commits(self) -> Iterator[SvnCommit]:
         """ Get all commits log that is committed by specific author for all repositories written
