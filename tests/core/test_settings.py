@@ -82,7 +82,7 @@ def test_save_settings(setting: settings.Setting) -> None:
     """ Test to be able to create setting file from Setting instance.
     """
     filepath = Path(__file__).resolve().parent / "settings.json"
-    settings.save_settings(filepath, setting)
+    settings.save_settings(setting, filepath)
     assert filepath.exists()
     filepath.unlink()
 
@@ -91,6 +91,6 @@ def test_overwrite_settings(settings_file: Path, setting: settings.Setting) -> N
     """ Overwrite settings file if already exists.
     """
     setting.git_author = "updated"
-    settings.save_settings(settings_file, setting)
+    settings.save_settings(setting, settings_file)
     updated = settings.load_settings(settings_file)
     assert updated.git_author == setting.git_author

@@ -56,5 +56,8 @@ jobs:
         env:
           REDMINE_API_KEY: ${{secrets.REDMINE_API_KEY}}
           REDMINE_URL: 'None'
+          SVN_USERNAME: 'username'
+          SVN_PASSWORD: 'password'
+          PROXY: 'http://user:pass@proxy:port'
         run: |
           pytest . -m "not internal"

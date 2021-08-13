@@ -2,7 +2,7 @@ from datetime import datetime
 import json
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Union
 
 from git_svn_monitor.core.config import PathLike, SETTING_FILE
 
@@ -74,7 +74,7 @@ def load_settings(path: PathLike = SETTING_FILE) -> Setting:
     return setting
 
 
-def save_settings(filepath: PathLike = SETTING_FILE, settings: Optional[Setting] = None) -> None:
+def save_settings(settings: Setting, filepath: PathLike = SETTING_FILE) -> None:
     """ Save Setting instance to json to update last update. Overwrite file if already exists.
     """
     def encode_settings(o: Any) -> Union[Dict[str, Any], str]:
@@ -84,14 +84,8 @@ def save_settings(filepath: PathLike = SETTING_FILE, settings: Optional[Setting]
             return o.__dict__
         return o
 
-    logger.info(f"save setting file: {filepath}")
-
-    if settings is None:
-        settings = Settings
-    logger.debug(f"setting parameter: {settings}")
+    logger.info(f"Save setting file to: {filepath}")
+    logger.debug(f"Setting parameter: {settings}")
 
     with open(filepath, mode="w", encoding="utf-8") as f:
         json.dump(settings, f, default=encode_settings, indent=2)
-
-
-Settings = load_settings()
