@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
       args:
         - http_proxy=$PROXY
+        - WORKDIR=/usr/src/app
     restart: on-failure
     container_name: 'progress_monitor'
     ports:
@@ -16,3 +17,4 @@ services:
     tty: true
     volumes:
       - ~/.progress_monitor:/root/.progress_monitor
+      - ~/.git-credentials:/root/.git-credentials
