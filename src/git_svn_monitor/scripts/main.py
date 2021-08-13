@@ -10,8 +10,8 @@ from git_svn_monitor.client.spread_seat import upload_commit
 from git_svn_monitor.core.config import env_config
 from git_svn_monitor.core.settings import save_settings, Settings
 from git_svn_monitor.model.commit_parser import BaseCommit
-from git_svn_monitor.model.redmine_client import RedmineClient
 from git_svn_monitor.model.manager import BaseManager, GitManager, SvnManager
+from git_svn_monitor.model.redmine_client import RedmineClient
 from git_svn_monitor.util import utility
 
 logger = getLogger(__name__)
