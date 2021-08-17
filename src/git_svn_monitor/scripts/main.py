@@ -6,7 +6,7 @@ from typing import Dict, List
 from redminelib.resources import Issue
 
 from git_svn_monitor.client.post_slack import send_to_slack
-from git_svn_monitor.client.spread_seat import upload_commit
+from git_svn_monitor.client.spread_seat import upload_commits
 from git_svn_monitor.core.config import env_config
 from git_svn_monitor.core.settings import Setting, load_settings, save_settings
 from git_svn_monitor.model.commit_parser import BaseCommit
@@ -32,8 +32,7 @@ def main() -> None:
 
     # Upload to spread sheet
     if env_config.spread_sheet_key:
-        for commit in commits:
-            ws_url = upload_commit(commit)
+        ws_url = upload_commits(commits)
 
     # Send updated info when setting up a slack webhook.
     if env_config.slack_webhook_url:

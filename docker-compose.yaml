@@ -14,6 +14,8 @@ services:
       - '9011:9011'
     env_file:
       - .env
+    environment:
+      - DEBUG=False
     tty: true
     volumes:
       - ~/.progress_monitor:/root/.progress_monitor

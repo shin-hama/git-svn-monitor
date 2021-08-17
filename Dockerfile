@@ -13,7 +13,7 @@ RUN pip install poetry && \
 FROM python:3.8-slim as dev
 
 ENV PYTHONUNBUFFERED=1 \
-    LANG=en_US.UTF-8
+    LANG=C.UTF-8
 
 ARG WORKDIR
 WORKDIR ${WORKDIR}
