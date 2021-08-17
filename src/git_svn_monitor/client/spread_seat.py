@@ -32,7 +32,7 @@ def open_spread_sheet() -> gspread.Spreadsheet:
     return spread_sheet
 
 
-def upload_commit(commit: BaseCommit) -> Optional[str]:
+def upload_commits(commits: List[BaseCommit]) -> Optional[str]:
     """ Upload commit parameter to spread sheet.
     """
     spread_sheet = open_spread_sheet()
@@ -41,8 +41,14 @@ def upload_commit(commit: BaseCommit) -> Optional[str]:
     # Get header row
     cols = ws.row_values(1)
 
-    vals = [_convert_to_str(getattr(commit, col)) for col in cols]
-    ws.append_row(vals, value_input_option="USER_ENTERED")
+    vals = [
+        [
+            _convert_to_str(getattr(commit, col))
+            for col in cols
+        ]
+        for commit in commits
+    ]
+    ws.append_rows(vals, value_input_option="USER_ENTERED")
 
     return spread_sheet.url
 
