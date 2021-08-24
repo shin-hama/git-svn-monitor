@@ -65,6 +65,7 @@ class GitManager(BaseManager):
                 continue
             logger.info(f"Fetch to: {repo}")
             if all([repo.name != remote.name for remote in self.git.remotes]):
+                logger.info(f"Add new remote: {repo}")
                 self.git.add_remote(repo.name, repo.url.replace("\\", "/"))
 
             yield self.git.fetch_remote(repo.name), repo.name

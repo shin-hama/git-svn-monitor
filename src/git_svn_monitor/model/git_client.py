@@ -31,8 +31,9 @@ class GitClient():
             self.repo.create_remote(name, url=url)
             logger.info("Add new remote repository")
             logger.info(f"name: {name}, url: {url}")
-        except git.GitError:
-            logger.debug(f"{name} is already existed.")
+        except git.GitError as e:
+            logger.warning(e)
+            logger.warning(f"Fail to add remote for {name}.")
             pass
 
     def fetch_remote(self, remote: str = "origin") -> IterableList[git.FetchInfo]:

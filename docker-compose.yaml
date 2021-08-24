@@ -16,6 +16,9 @@ services:
       - .env
     environment:
       - DEBUG=False
+      - PYTHONENCODING=utf-8
+      - PYTHONUNBUFFERED=1
+      - LANG=en_US.utf8
     tty: true
     volumes:
       - ~/.progress_monitor:/root/.progress_monitor
