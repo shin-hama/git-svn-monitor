@@ -10,16 +10,15 @@ RUN pip install poetry && \
     poetry build
 
 
-FROM python:3.8-slim as dev
-
-ENV PYTHONUNBUFFERED=1 \
-    LANG=C.UTF-8
+FROM python:3.8-slim as prod
 
 ARG WORKDIR
 WORKDIR ${WORKDIR}
 
 RUN apt-get update && \
-    apt-get install -y git subversion
+    apt-get install -y git locales subversion && \
+    echo "en_US UTF-8" > /etc/locale.gen && \
+    locale-gen
 
 COPY --from=builder ${WORKDIR}/requirements.txt ${WORKDIR}/dist/*.whl ./
 
