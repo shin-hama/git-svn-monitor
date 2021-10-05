@@ -64,9 +64,15 @@ class GitManager(BaseManager):
                 logger.warning("repo has no information to fetch")
                 continue
             logger.info(f"Fetch to: {repo}")
+
+            new_url = repo.url.replace("\\", "/")
             if all([repo.name != remote.name for remote in self.git.remotes]):
                 logger.info(f"Add new remote: {repo}")
-                self.git.add_remote(repo.name, repo.url.replace("\\", "/"))
+                self.git.add_remote(repo.name, new_url)
+
+            current_url = self.git.remotes[repo.name].urls.__next__()
+            if new_url != current_url:
+                self.git.set_url(repo.name, new_url, current_url)
 
             yield self.git.fetch_remote(repo.name), repo.name
 
