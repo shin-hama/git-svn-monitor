@@ -41,6 +41,11 @@ class GitManager(BaseManager):
             for commit in self.iter_commits_from_last_updated(fetched):
                 yield GitCommit(commit, repo_name)
 
+        repos = [repo.name for repo in self.settings.git_repositories]
+        removed_remotes = [remote for remote in self.git.remotes if remote.name not in repos]
+        for remote in removed_remotes:
+            self.git.delete_remote(remote)
+
     def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[Commit]:
         """ Get all the latest commits since the last update according to the configuration file.
 

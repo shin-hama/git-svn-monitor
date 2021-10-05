@@ -36,14 +36,14 @@ class GitClient():
             logger.warning(f"Fail to add remote for {name}.")
             pass
 
-    def delete_remote(self, name: str) -> None:
+    def delete_remote(self, remote: git.Remote) -> None:
         """
         """
         try:
-            self.repo.delete_remote(self.remotes[name])
+            self.repo.delete_remote(remote)
         except git.GitError as e:
             logger.warning(e)
-            logger.warning(f"Fail to delete remote for {name}.")
+            logger.warning(f"Fail to delete remote for {remote}.")
             pass
 
     def set_url(self, remote_name: str, new: str, old: Optional[str] = None) -> None:
