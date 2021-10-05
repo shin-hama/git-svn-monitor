@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Any, Iterator
+from typing import Any, Iterator, Optional
 
 import git
 from git.objects import Commit
@@ -36,6 +36,21 @@ class GitClient():
             logger.warning(f"Fail to add remote for {name}.")
             pass
 
+    def delete_remote(self, remote: git.Remote) -> None:
+        """
+        """
+        try:
+            self.repo.delete_remote(remote)
+        except git.GitError as e:
+            logger.warning(e)
+            logger.warning(f"Fail to delete remote for {remote}.")
+            pass
+
+    def set_url(self, remote_name: str, new: str, old: Optional[str] = None) -> None:
+        """ Set url to specified remote. Remove old url when set old.
+        """
+        self.remotes[remote_name].set_url(new, old)
+
     def fetch_remote(self, remote: str = "origin") -> IterableList[git.FetchInfo]:
         """ Fetch the latest changes for all branch of specified remote.
 
@@ -65,5 +80,5 @@ class GitClient():
         return self.repo.iter_commits(rev, **kwargs)
 
     @property
-    def remotes(self) -> IterableList[git.FetchInfo]:
+    def remotes(self) -> IterableList[git.Remote]:
         return self.repo.remotes

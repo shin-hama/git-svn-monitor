@@ -41,6 +41,11 @@ class GitManager(BaseManager):
             for commit in self.iter_commits_from_last_updated(fetched):
                 yield GitCommit(commit, repo_name)
 
+        repos = [repo.name for repo in self.settings.git_repositories]
+        removed_remotes = [remote for remote in self.git.remotes if remote.name not in repos]
+        for remote in removed_remotes:
+            self.git.delete_remote(remote)
+
     def iter_commits_from_last_updated(self, remotes: Any = None) -> Iterator[Commit]:
         """ Get all the latest commits since the last update according to the configuration file.
 
@@ -64,9 +69,15 @@ class GitManager(BaseManager):
                 logger.warning("repo has no information to fetch")
                 continue
             logger.info(f"Fetch to: {repo}")
+
+            new_url = repo.url.replace("\\", "/")
             if all([repo.name != remote.name for remote in self.git.remotes]):
                 logger.info(f"Add new remote: {repo}")
-                self.git.add_remote(repo.name, repo.url.replace("\\", "/"))
+                self.git.add_remote(repo.name, new_url)
+
+            current_url = self.git.remotes[repo.name].urls.__next__()
+            if new_url != current_url:
+                self.git.set_url(repo.name, new_url, current_url)
 
             yield self.git.fetch_remote(repo.name), repo.name
 
