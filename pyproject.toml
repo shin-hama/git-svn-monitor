@@ -15,7 +15,7 @@ python-redmine = "^2.3.0"
 pydantic = "^1.8.2"
 svn = "^1.0.1"
 slack-sdk = "^3.11.2"
-gspread = "^4.0.1"
+gspread = "^5.0.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
