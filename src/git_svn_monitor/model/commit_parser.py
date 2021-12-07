@@ -44,7 +44,9 @@ class BaseCommit(object):
         try:
             return int(ticket_number)
         except Exception as e:
-            logger.error(f"Fail to convert to int: {ticket_number}")
+            logger.error(f"Fail to convert ticket number to int: {ticket_number}")
+            logger.error(f"Commit Message: {self.message}")
+            logger.error(f"Ticket number: {ticket_number}")
             raise e
 
     def build_message_for_redmine(self) -> str:
