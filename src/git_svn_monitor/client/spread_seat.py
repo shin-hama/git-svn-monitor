@@ -67,4 +67,5 @@ def _convert_to_str(val: Any) -> str:
         except AttributeError or ValueError:
             continue
     logger.error(f"Cannot convert {type(val)} to str, you have to implement converter")
+    logger.error(f"Original value: {val}")
     raise NotImplementedError
