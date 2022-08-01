@@ -20,7 +20,7 @@ gspread = "^4.0.1"
 [tool.poetry.dev-dependencies]
 pytest = "^6.2"
 autopep8 = "^1.5.7"
-flake8 = "^3.9.2"
+flake8 = "^5.0.1"
 mypy = "^0.910"
 
 [tool.pytest.ini_options]
